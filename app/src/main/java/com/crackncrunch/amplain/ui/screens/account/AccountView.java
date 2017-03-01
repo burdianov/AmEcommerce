@@ -2,7 +2,6 @@ package com.crackncrunch.amplain.ui.screens.account;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +21,7 @@ import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.storage.dto.UserInfoDto;
 import com.crackncrunch.amplain.data.storage.dto.UserSettingsDto;
 import com.crackncrunch.amplain.di.DaggerService;
+import com.crackncrunch.amplain.mvp.views.AbstractView;
 import com.crackncrunch.amplain.mvp.views.IAccountView;
 import com.squareup.picasso.Picasso;
 
@@ -32,7 +32,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import flow.Flow;
 
-public class AccountView extends CoordinatorLayout implements IAccountView {
+public class AccountView extends AbstractView<AccountScreen.AccountPresenter>
+        implements IAccountView {
 
     public static final int PREVIEW_STATE = 1;
     public static final int EDIT_STATE = 0;
@@ -75,6 +76,11 @@ public class AccountView extends CoordinatorLayout implements IAccountView {
         }
     }
 
+    @Override
+    protected void initDagger(Context context) {
+        // empty
+    }
+
     public AddressesAdapter getAdapter() {
         return mAdapter;
     }
@@ -115,11 +121,13 @@ public class AccountView extends CoordinatorLayout implements IAccountView {
 
     public void initView() {
         showViewFromState();
+
         mAdapter = new AddressesAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mAddressList.setLayoutManager(layoutManager);
         mAddressList.setAdapter(mAdapter);
         mAddressList.setVisibility(VISIBLE);
+
         initSwipe();
     }
 
@@ -295,11 +303,6 @@ public class AccountView extends CoordinatorLayout implements IAccountView {
     //endregion
 
     //region ==================== Events ===================
-
-    @OnClick(R.id.collapsing_toolbar)
-    void testEditMode() {
-        mPresenter.switchViewState();
-    }
 
     @OnClick(R.id.add_address_btn)
     void clickAddAddress() {

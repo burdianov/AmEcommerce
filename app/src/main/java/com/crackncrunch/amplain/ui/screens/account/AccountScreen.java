@@ -19,9 +19,10 @@ import com.crackncrunch.amplain.di.scopes.AccountScope;
 import com.crackncrunch.amplain.flow.AbstractScreen;
 import com.crackncrunch.amplain.flow.Screen;
 import com.crackncrunch.amplain.mvp.models.AccountModel;
+import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.IAccountPresenter;
+import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
 import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
-import com.crackncrunch.amplain.mvp.presenters.SubscribePresenter;
 import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
 import com.crackncrunch.amplain.ui.screens.address.AddressScreen;
@@ -94,7 +95,8 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     //region ==================== Presenter ===================
 
-    public class AccountPresenter extends SubscribePresenter<AccountView>
+    public class AccountPresenter
+            extends AbstractPresenter<AccountView, AccountModel>
             implements IAccountPresenter {
 
         public static final String TAG = "AccountPresenter";
@@ -111,6 +113,34 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
         private Subscription mUserInfoSub;
 
         //region ==================== Lifecycle ===================
+
+        @Override
+        protected void initActionBar() {
+            int drawable;
+            if (mCustomState == AccountView.EDIT_STATE) {
+                drawable = R.drawable.ic_done_black_24dp;
+            } else {
+                drawable = R.drawable.ic_edit_black_24dp;
+            }
+            mRootPresenter.newActionBarBuilder()
+                    .setTitle("Personal Profile")
+                    .addAction(new MenuItemHolder("To Cart", drawable,
+                            item -> {
+                                switchViewState();
+                                return true;
+                    }))
+                    .build();
+        }
+
+        @Override
+        protected void initFab() {
+            // empty
+        }
+
+        @Override
+        protected void initDagger(MortarScope scope) {
+            // empty
+        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -234,6 +264,7 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
             if (getView() != null) {
                 getView().changeState();
             }
+            initActionBar();
         }
 
         @Override

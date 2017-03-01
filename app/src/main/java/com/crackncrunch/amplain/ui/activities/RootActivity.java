@@ -314,7 +314,7 @@ public class RootActivity extends AppCompatActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-         if (mActionBarMenuItems != null && !mActionBarMenuItems.isEmpty()) {
+        if (mActionBarMenuItems != null && !mActionBarMenuItems.isEmpty()) {
             for (MenuItemHolder menuItem : mActionBarMenuItems) {
                 MenuItem item = menu.add(menuItem.getIconResId());
                 item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -322,8 +322,8 @@ public class RootActivity extends AppCompatActivity
                         .setOnMenuItemClickListener(menuItem.getListener());
             }
         } else {
-             menu.clear();
-         }
+            menu.clear();
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
