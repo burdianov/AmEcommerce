@@ -1,0 +1,11 @@
+<android.support.design.widget.FloatingActionButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/common_fab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:layout_marginBottom="@dimen/fab_bottom_space"
+    android:layout_marginRight="@dimen/spacing_normal_16"
+    android:clickable="true"
+    app:rippleColor="@color/colorPrimaryDark"/>

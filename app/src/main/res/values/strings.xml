@@ -1,0 +1,109 @@
+<resources>
+    <!-- Fonts -->
+    <string name="roboto_regular">sans-serif</string>
+    <string name="roboto_light">sans-serif-light</string>
+    <string name="roboto_condensed">sans-serif-condensed</string>
+    <string name="roboto_black">sans-serif-black</string>
+    <string name="roboto_thin">sans-serif-thin</string>
+    <string name="roboto_medium">sans-serif-medium</string>
+
+    <!-- Misc -->
+    <string name="app_name">AndroidMiddlePlain</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_password">Enter password</string>
+    <string name="view_catalog">View catalog</string>
+    <string name="login">Login</string>
+    <string name="personal_profile">Personal Profile</string>
+    <string name="items_catalog">Items Catalog</string>
+    <string name="favorites">Favorites</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_notifications">My Notifications</string>
+    <string name="user_first_name">User First Name</string>
+    <string name="user_full_name">Hulk Hogan</string>
+    <string name="user_full_name_label">Full Name</string>
+    <string name="open_drawer">open</string>
+    <string name="close_drawer">close</string>
+    <string name="dummy_content_description">Dummy content description</string>
+    <string name="sample_item">Sample Item</string>
+    <string name="price">Price</string>
+    <string name="sample_price">26567</string>
+    <string name="quantity">Quantity</string>
+    <string name="lorem_ipsum">Donec et ex laoreet, aliquet metus in, malesuada
+        ligula. Promto di carste psi. Jacara dikili nihai skarula, hanta
+        buriskili ba</string>
+    <string name="error_message">Something went wrong, try again later</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_to_cart">Add to Cart</string>
+
+    <!-- Product names -->
+    <string name="product_name_1">Camera</string>
+    <string name="product_name_2">Monitor</string>
+    <string name="product_name_3">Printer</string>
+    <string name="product_name_4">Laptop</string>
+    <string name="product_name_5">Guitar</string>
+    <string name="product_name_6">Dumbbell</string>
+    <string name="product_name_7">Cake</string>
+    <string name="product_name_8">Bag</string>
+    <string name="product_name_9">Car</string>
+    <string name="product_name_10">Shoes</string>
+
+    <!-- Product Uris -->
+    <string name="product_url_1">http://img01.deviantart.net/f308/i/2012/007/8/3/camera_02_png_hq_by_gd08-d4lllmr.png</string>
+    <string name="product_url_2">http://images.clipartpanda.com/computer-monitor-png-monitor-icon-png.png</string>
+    <string name="product_url_3">http://freewebpsd.com/images/FreeWebPsd/Product/Large/hp-laserjet-pro-cp1025nw-color-printer-png-image-ce918a-_png00041.png</string>
+    <string name="product_url_4">http://images.clipartpanda.com/laptop-png-The-Lenovo-IdeaPad-Y550P-324156U-laptop.png</string>
+    <string name="product_url_5">https://d13yacurqjgara.cloudfront.net/users/5172/screenshots/873110/attachments/93723/guitar.png</string>
+    <string name="product_url_6">http://www.eserfitness.com/wp-content/uploads/2014/12/Dumbbell-pack.png</string>
+    <string name="product_url_7">http://pngimg.com/uploads/cake/cake_PNG13114.png</string>
+    <string name="product_url_8">https://www.frostriver.com/wp-content/uploads/2014/02/p-363-652-Flight-Bag.png</string>
+    <string name="product_url_9">http://3.bp.blogspot.com/-l3MxjN1EL8c/VcLaLAGZ0vI/AAAAAAAAE9M/pbiRVc9zl3c/s1600/car_large.png</string>
+    <string name="product_url_10">http://www.doubleselect.com/wp-content/uploads/2012/07/Mr.Hare_AW12_footwear_shoes.png</string>
+    <string name="are_you_sure">Are you sure you want to exit?</string>
+    <string name="close_app">Close App?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="account_fragment">Account Fragment</string>
+    <string name="favorites_fragment">Favorites Fragment</string>
+    <string name="orders_fragment">Orders Fragment</string>
+    <string name="notifications_fragment">Notifications Fragment</string>
+    <string name="shopping_cart">Shopping Cart</string>
+    <string name="sample_quantity">1</string>
+    <string name="facebook_button">Facebook button</string>
+    <string name="twitter_button">Twitter button</string>
+    <string name="vk_button">VK button</string>
+    <string name="phone_label">Phone:</string>
+    <string name="phone">+7(917)971-38-27</string>
+    <string name="add_address">Add Address</string>
+    <string name="push_notifications">Push notifications:</string>
+    <string name="order_status_notification">Notify about order status</string>
+    <string name="special_offer_notification">Notify about promotions and special offers</string>
+    <string name="delivery_address">Delivery Address:</string>
+    <string name="label_comments">Comments</string>
+    <string name="delivery_location_label">Delivery location</string>
+    <string name="delivery_location">In the middle of nowhere</string>
+    <string name="street">Street</string>
+    <string name="hint_building">Bldg.</string>
+    <string name="hint_apartment">Apt.</string>
+    <string name="hint_floor">Floor</string>
+    <string name="address_comments">Comments</string>
+    <string name="location_label">Location</string>
+    <string name="random_address">At the end of the world</string>
+    <string name="no_comment">No comment</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="edit_address_question">Are you sure you want to edit this address?</string>
+    <string name="delete_address_question">Are you sure you want to delete this
+        address?</string>
+    <string name="edit_address">Edit address</string>
+    <string name="delete_address">Delete address?</string>
+    <string name="cancel">Cancel</string>
+    <string name="blank">Blank</string>
+    <string name="show_more">Show more</string>
+    <string name="about">About</string>
+    <string name="add_comment">Add comment</string>
+    <string name="save_comment">Save comment</string>
+    <string name="empty_field">Empty field</string>
+    <string name="can_not_be_empty">The comment field can not be empty</string>
+    <string name="rate_this_product">Rate this product</string>
+    <string name="product_added">Product added to Cart</string>
+</resources>

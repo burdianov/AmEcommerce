@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.crackncrunch.amplain.ui.screens.product.ProductView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/product_card"
+        style="@style/CustomCard.ProductCard">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                app:srcCompat = "@drawable/ic_shopping_basket_black_24dp"
+                android:layout_width="@dimen/spacing_larger_96"
+                android:layout_height="@dimen/spacing_larger_96"/>
+
+            <TextView
+                style="@style/ProductText.ProductTitle"
+                android:text="@string/product_added"
+                android:textColor="@color/colorPrimaryDark"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/product_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:foreground="@color/transparent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/spacing_small_8"
+                android:paddingLeft="@dimen/spacing_normal_16"
+                android:paddingRight="@dimen/spacing_normal_16"
+                android:paddingTop="@dimen/spacing_normal_16">
+
+                <TextView
+                    android:id="@+id/product_name_txt"
+                    style="@style/ProductText.ProductTitle"
+                    android:text="@string/sample_item"/>
+
+                <TextView
+                    android:id="@+id/product_description_txt"
+                    style="@style/ProductText.ProductDescription"
+                    android:text="@string/lorem_ipsum"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/product_image"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/product_image_height"
+                android:layout_marginLeft="@dimen/spacing_normal_16"
+                android:layout_marginRight="@dimen/spacing_normal_16"/>
+
+            <LinearLayout
+                android:id="@+id/product_vav_wrap"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_normal_16">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/ProductText.LabelPrice"
+                        android:text="@string/quantity"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/minus_btn"
+                            style="@style/CountBtn"
+                            android:contentDescription="@string/dummy_content_description"
+                            app:srcCompat="@drawable/ic_remove_black_24dp"/>
+
+                        <TextView
+                            android:id="@+id/product_count_txt"
+                            style="@style/ProductText.ValuePrice"
+                            android:text="@string/sample_quantity"/>
+
+                        <ImageButton
+                            android:id="@+id/plus_btn"
+                            style="@style/CountBtn"
+                            android:contentDescription="@string/dummy_content_description"
+                            app:srcCompat="@drawable/ic_add_black_24dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/ProductText.LabelPrice"
+                        android:text="@string/price"/>
+
+                    <TextView
+                        android:id="@+id/product_price_txt"
+                        style="@style/ProductText.ValuePrice"
+                        android:text="@string/sample_price"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_size_1"
+                android:background="@color/grey_light"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/spacing_small_8"
+                android:paddingRight="@dimen/spacing_normal_16">
+
+                <CheckBox
+                    android:id="@+id/favorite_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:button="@drawable/favorite_selector_btn"/>
+
+                <Button
+                    android:id="@+id/show_more_btn"
+                    style="?attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:text="@string/show_more"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorAccent"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</com.crackncrunch.amplain.ui.screens.product.ProductView>

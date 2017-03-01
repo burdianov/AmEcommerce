@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#757575</color>
+    <color name="colorAccent">#9A50A5</color>
+
+    <color name="social_btn_background">#80000000</color>
+    <color name="grey">#5D5D5D</color>
+    <color name="grey_light">#EDEFF3</color>
+
+    <color name="color_warning">#EF5350</color>
+    <color name="color_black">@android:color/black</color>
+    <color name="color_white">@android:color/white</color>
+    <color name="color_grey_darker">@android:color/darker_gray</color>
+    <color name="color_grey_lighter">#BBBFC4</color>
+    <color name="account_title_color">#474A4F</color>
+
+    <color name="color_swipe_delete">#E65100</color>
+    <color name="color_swipe_edit">#00C853</color>
+
+    <color name="transparent">#00FFFFFF</color>
+</resources>

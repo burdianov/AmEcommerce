@@ -1,0 +1,92 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Fonts // English and English-like scripts -->
+    <dimen name="font_small_10">10sp</dimen>
+    <dimen name="font_small_12">12sp</dimen>
+    <dimen name="font_small_14">14sp</dimen>
+    <dimen name="font_normal_16">16sp</dimen>
+    <dimen name="font_normal_18">18sp</dimen>
+    <dimen name="font_medium_20">20sp</dimen>
+    <dimen name="font_medium_24">24sp</dimen>
+    <dimen name="font_medium_32">32sp</dimen>
+    <dimen name="font_medium_34">34sp</dimen>
+    <dimen name="font_medium_plus_40">40sp</dimen>
+    <dimen name="font_large_45">45sp</dimen>
+    <dimen name="font_larger_56">56sp</dimen>
+    <dimen name="font_largest_112">112sp</dimen>
+
+    <!-- Sizes // Determines the height of content blocks.-->
+    <dimen name="size_small_8">8dp</dimen>
+    <dimen name="size_small_16">16dp</dimen>
+    <dimen name="size_small_24">24dp</dimen>
+    <dimen name="size_normal_40">40dp</dimen>
+    <dimen name="size_normal_44">44dp</dimen>
+    <dimen name="size_medium_48">48dp</dimen>
+    <dimen name="size_medium_56">56dp</dimen>
+    <dimen name="size_medium_64">64dp</dimen>
+    <dimen name="size_large_68">64dp</dimen>
+    <dimen name="size_large_72">72dp</dimen>
+    <dimen name="size_large_80">80dp</dimen>
+    <dimen name="size_large_88">88dp</dimen>
+    <dimen name="size_huge_112">112dp</dimen>
+    <dimen name="size_huge_128">128dp</dimen>
+    <dimen name="size_nav_header_160">160dp</dimen>
+
+    <!-- Spaces // Determine placement of type and icons from edges of elements. -->
+    <!-- The text box offset is set to Leading (Type > Area Type Options).-->
+    <dimen name="spacing_zero">0dp</dimen>
+    <dimen name="spacing_tiny_4">4dp</dimen>
+    <dimen name="spacing_tiny_6">6dp</dimen>
+    <dimen name="spacing_small_8">8dp</dimen>
+    <dimen name="spacing_small_12">12dp</dimen>
+    <dimen name="spacing_normal_16">16dp</dimen>
+    <dimen name="spacing_normal_20">20dp</dimen>
+    <dimen name="spacing_medial_24">24dp</dimen>
+    <dimen name="spacing_medial_28">28dp</dimen>
+    <dimen name="spacing_medium_32">32dp</dimen>
+    <dimen name="spacing_medium_plus_36">36dp</dimen>
+    <dimen name="spacing_bigger_40">40dp</dimen>
+    <dimen name="spacing_bigger_44">44dp</dimen>
+    <dimen name="spacing_bigger_plus_48">48dp</dimen>
+    <dimen name="spacing_large_56">56dp</dimen>
+    <dimen name="spacing_large_60">60dp</dimen>
+    <dimen name="spacing_large_64">64dp</dimen>
+    <dimen name="spacing_larger_72">72dp</dimen>
+    <dimen name="spacing_larger_80">80dp</dimen>
+    <dimen name="spacing_larger_86">86dp</dimen>
+    <dimen name="spacing_larger_96">96dp</dimen>
+
+    <!-- Corner Radius -->
+    <dimen name="corner_radius_2">2dp</dimen>
+    <dimen name="corner_radius_4">4dp</dimen>
+    <dimen name="corner_radius_8">8dp</dimen>
+
+    <!-- Lines -->
+    <dimen name="line_size_1">1dp</dimen>
+    <dimen name="line_size_2">2dp</dimen>
+    <dimen name="login_logo_width_100">100dp</dimen>
+    <dimen name="login_logo_height_100">100dp</dimen>
+
+    <!-- Dimensions -->
+    <dimen name="count_button_width">44dp</dimen>
+    <dimen name="count_button_height">44dp</dimen>
+    <dimen name="count_button_padding">12dp</dimen>
+    <dimen name="avatar_padding_top">16dp</dimen>
+    <dimen name="product_image_height">180dp</dimen>
+    <dimen name="collapsing_toolbar_height">180dp</dimen>
+    <dimen name="account_avatar_margin_top">110dp</dimen>
+    <dimen name="product_description_card_height">264dp</dimen>
+    <dimen name="account_avatar_height">140dp</dimen>
+    <dimen name="account_avatar_width">140dp</dimen>
+    <dimen name="pointer_size">24dp</dimen>
+    <dimen name="toolbar_height">48dp</dimen>
+    <dimen name="product_info_card_height">145dp</dimen>
+    <dimen name="fab_right_space">24dp</dimen>
+    <dimen name="fab_bottom_space">16dp</dimen>
+    <dimen name="auth_frame_height">140dp</dimen>
+    <dimen name="card_elevation_normal">4dp</dimen>
+    <dimen name="margin_above_add_to_cart_btn">14dp</dimen>
+</resources>

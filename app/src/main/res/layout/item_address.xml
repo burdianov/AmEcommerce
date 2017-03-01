@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/spacing_small_8"
+    android:paddingStart="@dimen/spacing_small_8"
+    android:paddingTop="@dimen/spacing_normal_16">
+
+    <ImageView
+        style="@style/Icon"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        android:contentDescription="@string/dummy_content_description"
+        android:src="@drawable/ic_place_black_24dp"/>
+
+    <LinearLayout
+        android:paddingLeft="@dimen/spacing_small_8"
+        android:paddingStart="@dimen/spacing_small_8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/label_address_txt"
+            style="@style/CustomText.AccountLabel"
+            tools:text="@string/location_label"/>
+
+        <TextView
+            android:id="@+id/address_txt"
+            style="@style/CustomText.AccountValue"
+            android:text="@string/random_address"/>
+
+        <TextView
+            android:id="@+id/label_comment"
+            style="@style/CustomText.AccountLabel"
+            android:text="@string/label_comments"/>
+
+        <TextView
+            android:id="@+id/comment_txt"
+            style="@style/CustomText.AccountTitle"
+            android:text="@string/no_comment"/>
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="avatar_padding_top">40dp</dimen>
+    <dimen name="appbar_account_margin_top">-24dp</dimen>
+    <dimen name="avatar_margin_top">143dp</dimen>
+</resources>

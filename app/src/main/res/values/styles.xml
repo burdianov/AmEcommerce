@@ -1,0 +1,225 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay"
+           parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/colorPrimaryDark</item>
+        <item name="colorControlNormal">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/background</item>
+    </style>
+
+    <style name="NavigationDrawer" parent="Widget.Design.NavigationView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="itemIconTint">@color/nav_icon_color_selector</item>
+        <item name="itemBackground">@drawable/nav_drawer_item_selector</item>
+        <item name="itemTextColor">@color/nav_color_selector</item>
+    </style>
+
+    <style name="CustomCard">
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_2</item>
+        <item name="contentPadding">@dimen/spacing_normal_16</item>
+        <item name="cardElevation">@dimen/spacing_tiny_4</item>
+    </style>
+
+    <style name="CustomCard.LoginCard">
+        <item name="android:layout_marginLeft">@dimen/spacing_medium_plus_36</item>
+        <item name="android:layout_marginRight">@dimen/spacing_medium_plus_36</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_small_8</item>
+    </style>
+
+    <style name="CustomCard.ProductCard">
+        <item name="android:layout_margin">@dimen/spacing_small_8</item>
+        <item name="contentPadding">@dimen/spacing_zero</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="CustomCard.ProductDescription">
+        <item name="android:layout_marginLeft">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginRight">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_8</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_tiny_4</item>
+        <!--<item name="contentPadding">@dimen/spacing_zero</item>-->
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="CustomCard.ProductComments">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_huge_128</item>
+        <item name="android:paddingTop">@dimen/spacing_small_8</item>
+        <item name="android:paddingRight">@dimen/spacing_small_8</item>
+        <item name="android:paddingBottom">@dimen/spacing_zero</item>
+        <item name="android:paddingLeft">@dimen/spacing_small_8</item>
+    </style>
+
+    <style name="CountBtn">
+        <item name="android:layout_width">@dimen/count_button_width</item>
+        <item name="android:layout_height">@dimen/count_button_height</item>
+        <item name="android:padding">@dimen/count_button_padding</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="ProductText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@string/roboto_regular</item>
+    </style>
+
+    <style name="ProductText.ProductTitle">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small_12</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="ProductText.ProductDescription">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">@dimen/size_small_16</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+    </style>
+
+    <style name="ProductText.LabelPrice">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">@dimen/font_small_10</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_small_8</item>
+    </style>
+
+    <style name="ProductText.ValuePrice">
+        <item name="android:layout_height">@dimen/spacing_bigger_44</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/font_medium_24</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="CustomButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_medium_56</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_small_12</item>
+        <item name="android:fontFamily">@string/roboto_regular</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginLeft">@dimen/spacing_medium_32</item>
+        <item name="android:layout_marginRight">@dimen/spacing_medium_32</item>
+    </style>
+
+    <style name="CustomButtonAccount">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/size_medium_64</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_small_12</item>
+        <item name="android:fontFamily">@string/roboto_regular</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginLeft">@dimen/spacing_zero</item>
+        <item name="android:layout_marginRight">@dimen/spacing_zero</item>
+    </style>
+
+    <style name="StartBtn" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ShowBtn" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="CustomDialog">
+        <item name="android:fullDark">@android:color/transparent</item>
+    </style>
+
+    <style name="Icon">
+        <item name="android:layout_width">@dimen/pointer_size</item>
+        <item name="android:layout_height">@dimen/pointer_size</item>
+        <item name="android:tint">@color/colorAccent</item>
+    </style>
+
+    <style name="HorizontalDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/line_size_1</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_normal_20</item>
+        <item name="android:background">@color/grey_light</item>
+    </style>
+
+    <style name="CustomText">
+    </style>
+
+    <style name="CustomText.AccountTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">#474a4f</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_medial_24</item>
+        <item name="android:textSize">@dimen/font_small_14</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomText.AccountLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/spacing_normal_16</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_tiny_4</item>
+        <item name="android:textColor">@color/color_grey_darker</item>
+        <item name="android:textSize">@dimen/font_small_12</item>
+    </style>
+
+    <style name="CustomText.AccountValue">
+        <item name="android:textSize">@dimen/size_small_16</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/account_title_color</item>
+        <item name="android:enabled">false</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <style name="CustomSwitch" parent="Theme.AppCompat.Light">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorSwitchThumbNormal">@color/color_white</item>
+        <item name="android:colorForeground">@color/color_grey_darker</item>
+    </style>
+
+    <style name="EditTextProfile">
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/color_grey_darker</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+    </style>
+
+    <style name="Base.Widget.Design.TabLayout" parent="android:Widget"
+           tools:override="true">
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">@dimen/spacing_zero</item>
+        <item name="tabSelectedTextColor">@color/colorPrimaryDark</item>
+        <item name="tabIndicatorColor">@color/colorAccent</item>
+        <item name="tabIndicatorHeight">@dimen/line_size_2</item>
+    </style>
+</resources>

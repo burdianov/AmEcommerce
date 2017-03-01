@@ -1,0 +1,112 @@
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+apply plugin: 'com.fernandocejas.frodo'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'realm-android'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+        targetSdkVersion 25
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        base {
+            minSdkVersion 16
+            applicationId 'com.crackncrunch.amplain'
+            testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+            versionCode 1
+            versionName '1.0'
+        }
+        realmMp {
+            minSdkVersion 16
+            applicationId 'com.crackncrunch.amplain.realm'
+            testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+            versionCode 1
+            versionName '2.0'
+            versionNameSuffix 'realmMp'
+            // buildConfigField 'String', 'HOST', '"http://anyUrl.com"' // define for this flavor
+
+            // necessary for automatic synchronization with Realm Object Server
+            realm {
+                syncEnabled = true;
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+
+    // Support Library
+    compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:support-v4:25.1.1'
+    compile 'com.android.support:cardview-v7:25.1.1'
+
+    // ButterKnife
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    // CircleImageView
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+
+    // Dagger 2
+    compile 'com.google.dagger:dagger:2.6'
+    apt 'com.google.dagger:dagger-compiler:2.6'
+
+    // Retrofit 2
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-moshi:2.1.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+
+    // Okhttp3
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+    // Picasso
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // Flow and Mortar
+    compile 'com.squareup.flow:flow:1.0.0-alpha2'
+    compile 'com.squareup.mortar:mortar:0.20'
+
+    // RxJava and RxAndroid
+    compile 'io.reactivex:rxjava:1.2.3'
+    compile 'io.reactivex:rxandroid:1.2.1'
+
+    // Gson
+    compile 'com.google.code.gson:gson:2.4'
+
+    // Stetho
+    compile 'com.facebook.stetho:stetho:1.4.2'
+    compile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
+
+    // base Flavor
+    // Stetho Realm
+    baseCompile 'com.uphyca:stetho_realm:2.0.0'
+    // Android Priority Job Queue
+    baseCompile 'com.birbit:android-priority-jobqueue:2.0.1'
+
+    // Transitions backwards compatibility (for versions less than Lollipop)
+    compile 'com.andkulikov:transitionseverywhere:1.7.0'
+
+    // CircleIndicator
+    compile 'me.relex:circleindicator:1.2.2@aar'
+}
