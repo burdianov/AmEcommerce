@@ -2,8 +2,12 @@ package com.crackncrunch.amplain.data.managers;
 
 import com.crackncrunch.amplain.data.network.res.CommentRes;
 import com.crackncrunch.amplain.data.network.res.ProductRes;
+import com.crackncrunch.amplain.data.storage.dto.UserAddressDto;
 import com.crackncrunch.amplain.data.storage.realm.CommentRealm;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
+import com.crackncrunch.amplain.data.storage.realm.UserAddressRealm;
+
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -17,6 +21,27 @@ import rx.Observable;
 public class RealmManager {
 
     public Realm mRealmInstance;
+
+    public void saveNewAddressToRealm(UserAddressDto userAddressDto) {
+        if (userAddressDto.getId() == null) {
+            userAddressDto.setId(UUID.randomUUID().toString());
+        }
+
+        Realm realm = Realm.getDefaultInstance();
+
+        UserAddressRealm userAddressRealm = new UserAddressRealm(userAddressDto);
+
+        realm.executeTransaction(realm1 -> realm1.insertOrUpdate(userAddressRealm));
+        realm.close();
+    }
+
+    public RealmResults<UserAddressRealm> getAllAddressesFromRealm() {
+
+        RealmResults<UserAddressRealm> addresses = getQueryRealmInstance()
+                .where(UserAddressRealm.class).findAll();
+
+        return addresses;
+    }
 
     public void saveProductResponseToRealm(ProductRes productRes) {
         Realm realm = Realm.getDefaultInstance();

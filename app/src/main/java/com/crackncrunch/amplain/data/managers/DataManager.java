@@ -14,6 +14,7 @@ import com.crackncrunch.amplain.data.storage.dto.CommentDto;
 import com.crackncrunch.amplain.data.storage.dto.ProductDto;
 import com.crackncrunch.amplain.data.storage.dto.UserAddressDto;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
+import com.crackncrunch.amplain.data.storage.realm.UserAddressRealm;
 import com.crackncrunch.amplain.di.DaggerService;
 import com.crackncrunch.amplain.di.components.DaggerDataManagerComponent;
 import com.crackncrunch.amplain.di.components.DataManagerComponent;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -81,7 +83,6 @@ public class DataManager {
         generateProductsMockData();
         initUserProfileData();
         initUserSettingsData();
-        initAddressData();
 
         updateLocalDataWithTimer();
     }
@@ -149,26 +150,39 @@ public class DataManager {
 
     //region ==================== Addresses ===================
 
-    private void initAddressData() {
-        List<UserAddressDto> userAddresses = getPreferencesManager().getUserAddresses();
+    private void getUserAddressData() {
         mUserAddresses = new ArrayList<>();
 
-        if (userAddresses == null) {
+        List<UserAddressRealm> userAddresses = mRealmManager
+                .getAllAddressesFromRealm();
+
+        if (userAddresses.size() == 0) {
             UserAddressDto userAddress;
-            userAddress = new UserAddressDto("1", "Home", "Airport Road",
-                    "24", "56", 9, "Beware of crazy dogs");
+            userAddress = new UserAddressDto(UUID.randomUUID().toString(),
+                    "Home", "Airport Road", "24", "56",
+                    9, "Beware of crazy dogs");
+            mRealmManager.saveNewAddressToRealm(userAddress);
             mUserAddresses.add(userAddress);
 
-            userAddress = new UserAddressDto("2", "Work", "Central Park",
-                    "123", "67", 2, "In the middle of nowhere");
+            userAddress = new UserAddressDto(UUID.randomUUID().toString(),
+                    "Work", "Central Park", "123", "67",
+                    2, "In the middle of nowhere");
+            mRealmManager.saveNewAddressToRealm(userAddress);
             mUserAddresses.add(userAddress);
         } else {
-            mUserAddresses = userAddresses;
+            for (UserAddressRealm address : userAddresses) {
+                UserAddressDto addressDto = new UserAddressDto();
+                addressDto.setId(address.getId());
+                addressDto.setName(address.getName());
+                addressDto.setStreet(address.getStreet());
+                addressDto.setBuilding(address.getBuilding());
+                addressDto.setApartment(address.getApartment());
+                addressDto.setFloor(address.getFloor());
+                addressDto.setComment(address.getComment());
+                addressDto.setFavorite(address.getFavorite());
+                mUserAddresses.add(addressDto);
+            }
         }
-    }
-
-    public List<UserAddressDto> getUserAddresses() {
-        return mUserAddresses;
     }
 
     public void updateOrInsertAddress(UserAddressDto addressDto) {
@@ -177,14 +191,19 @@ public class DataManager {
         } else {
             mUserAddresses.add(0, addressDto);
         }
-        mPreferencesManager.saveUserAddresses(mUserAddresses);
+        mRealmManager.saveNewAddressToRealm(addressDto);
     }
 
     public void removeAddress(UserAddressDto addressDto) {
         if (mUserAddresses.contains(addressDto)) {
             mUserAddresses.remove(mUserAddresses.indexOf(addressDto));
-            mPreferencesManager.saveUserAddresses(mUserAddresses);
+            mRealmManager.deleteFromRealm(UserAddressRealm.class, addressDto.getId());
         }
+    }
+
+    public List<UserAddressDto> getUserAddresses() {
+        getUserAddressData();
+        return mUserAddresses;
     }
 
     //endregion
