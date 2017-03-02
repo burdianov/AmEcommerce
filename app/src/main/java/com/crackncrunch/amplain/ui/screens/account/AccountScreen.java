@@ -112,8 +112,6 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
         private Subscription mActivityResultSub;
         private Subscription mUserInfoSub;
 
-        //region ==================== Lifecycle ===================
-
         @Override
         protected void initActionBar() {
             int drawable;
@@ -128,7 +126,7 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
                             item -> {
                                 switchViewState();
                                 return true;
-                    }))
+                            }))
                     .build();
         }
 
@@ -141,6 +139,8 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
         protected void initDagger(MortarScope scope) {
             // empty
         }
+
+        //region ==================== Lifecycle ===================
 
         @Override
         protected void onEnterScope(MortarScope scope) {

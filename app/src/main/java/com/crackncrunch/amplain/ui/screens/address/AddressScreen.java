@@ -10,7 +10,9 @@ import com.crackncrunch.amplain.di.scopes.AddressScope;
 import com.crackncrunch.amplain.flow.AbstractScreen;
 import com.crackncrunch.amplain.flow.Screen;
 import com.crackncrunch.amplain.mvp.models.AccountModel;
+import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.IAddressPresenter;
+import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
 import com.crackncrunch.amplain.ui.screens.account.AccountScreen;
 
 import javax.inject.Inject;
@@ -19,7 +21,6 @@ import dagger.Provides;
 import flow.Flow;
 import flow.TreeKey;
 import mortar.MortarScope;
-import mortar.ViewPresenter;
 
 @Screen(R.layout.screen_add_address)
 public class AddressScreen extends AbstractScreen<AccountScreen.Component>
@@ -27,10 +28,12 @@ public class AddressScreen extends AbstractScreen<AccountScreen.Component>
 
     @Nullable
     private UserAddressDto mAddressDto;
+    private boolean mIsAddAddress;
 
     public AddressScreen(@Nullable UserAddressDto addressDto) {
         mAddressDto = addressDto;
         if (mAddressDto == null) {
+            mIsAddAddress = true;
             mAddressDto = new UserAddressDto();
         }
     }
@@ -70,7 +73,7 @@ public class AddressScreen extends AbstractScreen<AccountScreen.Component>
         @Provides
         @AddressScope
         AddressPresenter provideAddressPresenter() {
-            return new AddressPresenter();
+            return new AddressPresenter(mIsAddAddress);
         }
     }
 
@@ -86,11 +89,41 @@ public class AddressScreen extends AbstractScreen<AccountScreen.Component>
 
     //region ==================== Presenter ===================
 
-    public class AddressPresenter extends ViewPresenter<AddressView> implements
-            IAddressPresenter {
+    public class AddressPresenter
+            extends AbstractPresenter<AddressView, AccountModel>
+            implements IAddressPresenter {
 
         @Inject
         AccountModel mAccountModel;
+        private boolean mIsAdd;
+
+        public AddressPresenter(boolean isAddAddress) {
+            mIsAdd = isAddAddress;
+        }
+
+        @Override
+        protected void initActionBar() {
+            String title = mIsAdd ? "Add Address" : "Edit Address";
+            mRootPresenter.newActionBarBuilder()
+                    .setTitle(title)
+                    .addAction(new MenuItemHolder("Save", R.drawable
+                            .ic_done_black_24dp, item -> {
+                        clickOnAddAddress();
+                        return true;
+                    }))
+                    .setBackArrow(true)
+                    .build();
+        }
+
+        @Override
+        protected void initFab() {
+            // empty
+        }
+
+        @Override
+        protected void initDagger(MortarScope scope) {
+            // empty
+        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {

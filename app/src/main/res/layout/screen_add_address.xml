@@ -3,21 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
-    android:paddingBottom="@dimen/spacing_medium_32"
     android:paddingLeft="@dimen/spacing_normal_16"
     android:paddingRight="@dimen/spacing_normal_16">
 
-    <Button
-        android:id="@+id/add_btn"
-        style="@style/CustomButtonAccount"
-        android:layout_alignParentBottom="true"
-        android:text="@string/add_address"
-        android:theme="@style/StartBtn"/>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -43,7 +36,8 @@
                 android:layout_marginEnd="@dimen/spacing_normal_16"
                 android:layout_marginRight="@dimen/spacing_normal_16"
                 android:layout_marginTop="@dimen/spacing_small_8"
-                android:src="@drawable/ic_font_download_black_24dp"
+                android:contentDescription="@string/dummy_content_description"
+                app:srcCompat="@drawable/ic_font_download_black_24dp"
                 android:tint="@color/colorAccent"/>
 
             <LinearLayout
@@ -86,7 +80,8 @@
                 android:layout_marginRight="@dimen/spacing_normal_16"
                 android:layout_marginTop="@dimen/spacing_small_8"
                 android:backgroundTint="@color/colorAccent"
-                android:src="@drawable/ic_place_black_24dp"
+                android:contentDescription="@string/dummy_content_description"
+                app:srcCompat="@drawable/ic_place_black_24dp"
                 android:tint="@color/colorAccent"/>
 
             <LinearLayout
@@ -225,12 +220,5 @@
 
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/line_size_1"
-            android:layout_marginTop="@dimen/spacing_small_12"
-            android:background="@color/grey_light"/>
-
     </LinearLayout>
 </com.crackncrunch.amplain.ui.screens.address.AddressView>

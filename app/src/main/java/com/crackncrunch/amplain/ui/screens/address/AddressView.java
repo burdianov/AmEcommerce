@@ -3,22 +3,21 @@ package com.crackncrunch.amplain.ui.screens.address;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.storage.dto.UserAddressDto;
 import com.crackncrunch.amplain.di.DaggerService;
+import com.crackncrunch.amplain.mvp.views.AbstractView;
 import com.crackncrunch.amplain.mvp.views.IAddressView;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class AddressView extends RelativeLayout implements IAddressView {
+public class AddressView extends AbstractView<AddressScreen.AddressPresenter>
+        implements IAddressView {
 
     @BindView(R.id.address_name_et)
     EditText mAddressNameEt;
@@ -32,9 +31,7 @@ public class AddressView extends RelativeLayout implements IAddressView {
     EditText mNumberFloorEt;
     @BindView(R.id.comment_et)
     EditText mCommentEt;
-    @BindView(R.id.add_btn)
-    Button mAddBtn;
-    
+
     @Inject
     AddressScreen.AddressPresenter mPresenter;
 
@@ -46,6 +43,11 @@ public class AddressView extends RelativeLayout implements IAddressView {
             DaggerService.<AddressScreen.Component>getDaggerComponent(context)
                     .inject(this);
         }
+    }
+
+    @Override
+    protected void initDagger(Context context) {
+        // empty
     }
 
     //region ==================== Flow view lifecycle callbacks ===================
@@ -85,7 +87,6 @@ public class AddressView extends RelativeLayout implements IAddressView {
             mNumberApartmentEt.setText(address.getApartment());
             mNumberFloorEt.setText(String.valueOf(address.getFloor()));
             mCommentEt.setText(address.getComment());
-            mAddBtn.setText("Save");
         }
     }
 
@@ -120,15 +121,6 @@ public class AddressView extends RelativeLayout implements IAddressView {
     @Override
     public boolean viewOnBackPressed() {
         return false;
-    }
-
-    //endregion
-
-    //region ==================== Events ===================
-
-    @OnClick(R.id.add_btn)
-    void AddAddress() {
-        mPresenter.clickOnAddAddress();
     }
 
     //endregion
