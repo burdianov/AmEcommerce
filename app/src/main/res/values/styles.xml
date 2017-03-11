@@ -70,6 +70,14 @@
         <item name="android:paddingLeft">@dimen/spacing_small_8</item>
     </style>
 
+    <style name="FavoriteCard">
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_2</item>
+        <item name="cardElevation">@dimen/spacing_tiny_4</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/favorite_card_height</item>
+    </style>
+
     <style name="CountBtn">
         <item name="android:layout_width">@dimen/count_button_width</item>
         <item name="android:layout_height">@dimen/count_button_height</item>
@@ -115,6 +123,20 @@
         <item name="android:textStyle">bold</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="ProductText.FavoriteTitle">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/font_small_10</item>
+    </style>
+
+    <style name="ProductText.FavoriteDescription">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">@dimen/font_small_10</item>
     </style>
 
     <style name="CustomButton">

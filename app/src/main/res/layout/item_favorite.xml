@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/favorite_card"
+    android:layout_marginLeft="@dimen/spacing_tiny_4"
+    android:layout_marginRight="@dimen/spacing_tiny_4"
+    android:layout_marginBottom="@dimen/spacing_small_8"
+    style="@style/FavoriteCard">
+
+    <LinearLayout
+        android:id="@+id/favorite_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:foreground="@color/transparent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/favorite_product_img"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/favorite_product_height"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/favorite_description_height"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/spacing_normal_16"
+            android:paddingLeft="@dimen/spacing_normal_16"
+            android:paddingRight="@dimen/spacing_normal_16"
+            android:paddingTop="@dimen/spacing_medial_24">
+
+            <TextView
+                android:id="@+id/favorite_product_name"
+                style="@style/ProductText.FavoriteTitle"
+                android:layout_gravity="left"
+                android:layout_marginBottom="@dimen/spacing_tiny_4"
+                android:text="@string/sample_item"/>
+
+            <TextView
+                android:id="@+id/favorite_product_description"
+                style="@style/ProductText.FavoriteDescription"
+                android:gravity="left"
+                android:lines="2"
+                android:text="@string/lorem_ipsum"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_small_16"
+                android:layout_marginTop="@dimen/spacing_tiny_6">
+
+                <TextView
+                    android:id="@+id/favorite_product_price"
+                    android:layout_width="@dimen/spacing_zero"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:text="2500"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/font_small_12"/>
+
+                <ImageView
+                    android:id="@+id/favorite_basket_img"
+                    android:layout_width="@dimen/spacing_zero"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    app:srcCompat="@drawable/ic_shopping_basket_black_24dp"/>
+
+                <ImageView
+                    android:id="@+id/favorite_heart_img"
+                    android:layout_width="@dimen/spacing_zero"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    app:srcCompat="@drawable/ic_favorite_orange_24dp"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

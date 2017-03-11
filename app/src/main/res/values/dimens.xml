@@ -19,6 +19,7 @@
     <dimen name="font_largest_112">112sp</dimen>
 
     <!-- Sizes // Determines the height of content blocks.-->
+    <dimen name="size_zero">0dp</dimen>
     <dimen name="size_small_8">8dp</dimen>
     <dimen name="size_small_16">16dp</dimen>
     <dimen name="size_small_24">24dp</dimen>
@@ -33,7 +34,6 @@
     <dimen name="size_large_88">88dp</dimen>
     <dimen name="size_huge_112">112dp</dimen>
     <dimen name="size_huge_128">128dp</dimen>
-    <dimen name="size_nav_header_160">160dp</dimen>
 
     <!-- Spaces // Determine placement of type and icons from edges of elements. -->
     <!-- The text box offset is set to Leading (Type > Area Type Options).-->
@@ -71,6 +71,7 @@
     <dimen name="login_logo_height_100">100dp</dimen>
 
     <!-- Dimensions -->
+    <dimen name="size_nav_header">160dp</dimen>
     <dimen name="count_button_width">44dp</dimen>
     <dimen name="count_button_height">44dp</dimen>
     <dimen name="count_button_padding">12dp</dimen>
@@ -89,4 +90,7 @@
     <dimen name="auth_frame_height">140dp</dimen>
     <dimen name="card_elevation_normal">4dp</dimen>
     <dimen name="margin_above_add_to_cart_btn">14dp</dimen>
+    <dimen name="favorite_card_height">264dp</dimen>
+    <dimen name="favorite_product_height">160dp</dimen>
+    <dimen name="favorite_description_height">104dp</dimen>
 </resources>

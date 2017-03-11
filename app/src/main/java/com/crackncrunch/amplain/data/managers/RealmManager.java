@@ -20,7 +20,7 @@ import rx.Observable;
 
 public class RealmManager {
 
-    public Realm mRealmInstance;
+    private Realm mRealmInstance;
 
     public void saveNewAddressToRealm(UserAddressDto userAddressDto) {
         if (userAddressDto.getId() == null) {
@@ -36,7 +36,6 @@ public class RealmManager {
     }
 
     public RealmResults<UserAddressRealm> getAllAddressesFromRealm() {
-
         RealmResults<UserAddressRealm> addresses = getQueryRealmInstance()
                 .where(UserAddressRealm.class).findAll();
 

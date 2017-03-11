@@ -76,7 +76,7 @@
                     <ImageView
                         style="@style/Icon"
                         android:contentDescription="@string/dummy_content_description"
-                        android:src="@drawable/ic_account_circle_black_24dp"/>
+                        app:srcCompat="@drawable/ic_account_circle_black_24dp"/>
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -112,7 +112,7 @@
                     <ImageView
                         style="@style/Icon"
                         android:contentDescription="@string/dummy_content_description"
-                        android:src="@drawable/ic_call_black_24dp"/>
+                        app:srcCompat="@drawable/ic_call_black_24dp"/>
 
                     <LinearLayout
                         android:orientation="vertical"

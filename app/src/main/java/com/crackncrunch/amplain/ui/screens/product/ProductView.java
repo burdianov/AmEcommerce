@@ -103,7 +103,7 @@ public class ProductView extends AbstractView<ProductScreen.ProductPresenter> im
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 /*.fit()
                 .centerCrop()*/
-                .placeholder(R.drawable.placeholder)
+                .placeholder(R.drawable.product_placeholder)
                 .into(mProductImage, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -115,7 +115,7 @@ public class ProductView extends AbstractView<ProductScreen.ProductPresenter> im
                         mPicasso.load(product.getImageUrl())
                                 /*.fit()
                                 .centerCrop()*/
-                                .placeholder(R.drawable.placeholder)
+                                .placeholder(R.drawable.product_placeholder)
                                 .into(mProductImage);
                     }
                 });

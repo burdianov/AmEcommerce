@@ -32,7 +32,7 @@ public class App extends Application {
 
     @Override
     public Object getSystemService(String name) {
-        return mRootScope.hasService(name)
+        return (mRootScope != null) && mRootScope.hasService(name)
                 ? mRootScope.getService(name)
                 : super.getSystemService(name);
     }

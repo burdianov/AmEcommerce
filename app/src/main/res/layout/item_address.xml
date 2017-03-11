@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -13,7 +13,7 @@
         style="@style/Icon"
         android:layout_marginTop="@dimen/spacing_small_8"
         android:contentDescription="@string/dummy_content_description"
-        android:src="@drawable/ic_place_black_24dp"/>
+        app:srcCompat="@drawable/ic_place_black_24dp"/>
 
     <LinearLayout
         android:paddingLeft="@dimen/spacing_small_8"

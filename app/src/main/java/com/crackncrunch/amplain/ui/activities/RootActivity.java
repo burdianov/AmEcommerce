@@ -49,6 +49,7 @@ import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.mvp.views.IView;
 import com.crackncrunch.amplain.ui.screens.account.AccountScreen;
 import com.crackncrunch.amplain.ui.screens.catalog.CatalogScreen;
+import com.crackncrunch.amplain.ui.screens.favorites.FavoriteScreen;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -198,6 +199,7 @@ public class RootActivity extends AppCompatActivity
                 key = new CatalogScreen();
                 break;
             case R.id.nav_favorites:
+                key = new FavoriteScreen();
                 break;
             case R.id.nav_orders:
                 break;

@@ -3,7 +3,6 @@ package com.crackncrunch.amplain.data.storage.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.crackncrunch.amplain.data.network.res.ProductRes;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
 
 import java.util.List;
@@ -63,16 +62,6 @@ public class ProductDto implements Parcelable {
             return new ProductDto[size];
         }
     };
-
-    public ProductDto(ProductRes productRes, ProductLocalInfo productLocalInfo) {
-        id = productRes.getRemoteId();
-        productName = productRes.getProductName();
-        imageUrl = productRes.getImageUrl();
-        description = productRes.getDescription();
-        price = productRes.getPrice();
-        count = productLocalInfo.getCount();
-        favorite = productLocalInfo.isFavorite();
-    }
 
     @Override
     public int describeContents() {
