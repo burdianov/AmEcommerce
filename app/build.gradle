@@ -9,6 +9,7 @@ android {
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         targetSdkVersion 25
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -24,14 +25,12 @@ android {
         base {
             minSdkVersion 16
             applicationId 'com.crackncrunch.amplain'
-            testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
             versionCode 1
             versionName '1.0'
         }
         realmMp {
             minSdkVersion 16
             applicationId 'com.crackncrunch.amplain.realm'
-            testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
             versionCode 1
             versionName '2.0'
             versionNameSuffix 'realmMp'
@@ -50,7 +49,16 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    // Unit Tests
     testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.7.14'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.4.2'
+
+    // Instrumentation Tests
+    androidTestCompile 'com.android.support:support-annotations:25.2.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
 
     // Support Library
     compile 'com.android.support:appcompat-v7:25.2.0'

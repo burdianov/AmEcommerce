@@ -4,8 +4,11 @@ public class ApiError extends Throwable {
     private int statusCode;
     private String message;
 
-    @Override
-    public String getMessage() {
-        return message + " statusCode: " + statusCode;
+    public ApiError() {
+        super("Unknown Server Error");
+    }
+
+    public ApiError(int statusCode) {
+        super("Server error " + statusCode);
     }
 }

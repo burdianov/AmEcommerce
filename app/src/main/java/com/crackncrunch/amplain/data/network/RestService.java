@@ -1,8 +1,10 @@
 package com.crackncrunch.amplain.data.network;
 
+import com.crackncrunch.amplain.data.network.req.UserLoginReq;
 import com.crackncrunch.amplain.data.network.res.AvatarUrlRes;
 import com.crackncrunch.amplain.data.network.res.CommentRes;
 import com.crackncrunch.amplain.data.network.res.ProductRes;
+import com.crackncrunch.amplain.data.network.res.UserRes;
 import com.crackncrunch.amplain.utils.ConstantsManager;
 
 import java.util.List;
@@ -35,4 +37,7 @@ public interface RestService {
     @Multipart
     @POST("avatar")
     Observable<AvatarUrlRes> uploadUserAvatar(@Part MultipartBody.Part file);
+
+    @POST("login")
+    Observable<Response<UserRes>> loginUser(@Body UserLoginReq userLoginReq);
 }

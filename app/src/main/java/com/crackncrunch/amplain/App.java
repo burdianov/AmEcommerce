@@ -32,9 +32,14 @@ public class App extends Application {
 
     @Override
     public Object getSystemService(String name) {
-        return (mRootScope != null) && mRootScope.hasService(name)
-                ? mRootScope.getService(name)
-                : super.getSystemService(name);
+        // т.к. запускаем инструментальный тест то делаем вот так (не найдет мортар скоуп иначе)
+        if (mRootScope != null) {
+            return mRootScope.hasService(name) ? mRootScope.getService(name)
+                    : super.getSystemService(name);
+        } else {
+            return super.getSystemService(name);
+        }
+
     }
 
     @Override

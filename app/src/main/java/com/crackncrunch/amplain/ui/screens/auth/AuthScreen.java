@@ -15,6 +15,9 @@ import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
 import com.crackncrunch.amplain.ui.activities.SplashActivity;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.inject.Inject;
 
 import dagger.Provides;
@@ -71,7 +74,8 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     //region ==================== Presenter ===================
 
-    public class AuthPresenter extends ViewPresenter<AuthView> implements IAuthPresenter {
+    public static class AuthPresenter extends ViewPresenter<AuthView> implements
+    IAuthPresenter {
 
         @Inject
         AuthModel mAuthModel;
@@ -85,6 +89,16 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                     .inject(this);
         }
 
+        public AuthPresenter() {
+
+        }
+
+        // for test
+        public AuthPresenter(AuthModel authModel, RootPresenter rootPresenter) {
+            mAuthModel = authModel;
+            mRootPresenter = rootPresenter;
+        }
+
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
@@ -96,6 +110,8 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                     getView().showLoginBtn();
                 }
                 getView().setTypeface();
+            } else {
+                getRootView().showError(new NullPointerException("Something is wrong"));
             }
         }
 
@@ -152,6 +168,12 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         @Override
         public boolean checkUserAuth() {
             return mAuthModel.isAuthUser();
+        }
+
+        public boolean isValidEmail(CharSequence target) {
+            Pattern pattern = Pattern.compile("^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$");
+            Matcher matcher = pattern.matcher(target);
+            return matcher.matches();
         }
     }
 

@@ -7,9 +7,13 @@ import com.crackncrunch.amplain.App;
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.network.RestCallTransformer;
 import com.crackncrunch.amplain.data.network.RestService;
+import com.crackncrunch.amplain.data.network.error.AccessError;
+import com.crackncrunch.amplain.data.network.error.ApiError;
+import com.crackncrunch.amplain.data.network.req.UserLoginReq;
 import com.crackncrunch.amplain.data.network.res.AvatarUrlRes;
 import com.crackncrunch.amplain.data.network.res.CommentRes;
 import com.crackncrunch.amplain.data.network.res.ProductRes;
+import com.crackncrunch.amplain.data.network.res.UserRes;
 import com.crackncrunch.amplain.data.storage.dto.CommentDto;
 import com.crackncrunch.amplain.data.storage.dto.ProductDto;
 import com.crackncrunch.amplain.data.storage.dto.UserAddressDto;
@@ -49,7 +53,7 @@ import static com.crackncrunch.amplain.data.managers.PreferencesManager.PROFILE_
 
 public class DataManager {
 
-    private static DataManager sInstance = new DataManager();
+    private static DataManager sInstance;
     public static final String TAG = "DataManager";
 
     @Inject
@@ -87,7 +91,15 @@ public class DataManager {
         updateLocalDataWithTimer();
     }
 
+    // for Unit Test
+    public DataManager(RestService restService) {
+        mRestService = restService;
+    }
+
     public static DataManager getInstance() {
+        if (sInstance == null) {
+            sInstance = new DataManager();
+        }
         return sInstance;
     }
 
@@ -101,13 +113,23 @@ public class DataManager {
 
     //region ==================== User Authentication ===================
 
-    public void loginUser(String email, String password) {
-        // TODO: 23-Oct-16 implement user authentication
+    public Observable<UserRes> loginUser(UserLoginReq userLoginReq) {
+        return mRestService.loginUser(userLoginReq)
+                .flatMap(userResResponse -> {
+                    switch (userResResponse.code()) {
+                        case 200:
+                            return Observable.just(userResResponse.body());
+                        case 403:
+                            return Observable.error(new AccessError());
+                        default:
+                            return Observable.error(new ApiError(userResResponse.code()));
+                    }
+                });
     }
 
     public boolean isAuthUser() {
         // TODO: 20-Feb-17 Check User auth token in SharedPreferences
-        return true;
+        return false;
     }
 
     //endregion
