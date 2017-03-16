@@ -72,7 +72,6 @@ public class AuthViewTest {
     }
 
     @Test
-    @Ignore
     public void input_valid_mail_password_VALID_HINT() throws Exception {
         mLoginBtn.perform(click());
         mLoginInput.perform(typeTextIntoFocusedView(TEST_EMAIL_VALID));

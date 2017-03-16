@@ -68,6 +68,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:imeOptions="actionNext"
+                            android:nextFocusDown="@+id/login_password_et"
                             android:inputType="text"
                             android:maxLines="1"
                             android:textColor="@android:color/black"
