@@ -15,6 +15,7 @@ import com.crackncrunch.amplain.data.storage.dto.UserInfoDto;
 import com.crackncrunch.amplain.di.DaggerService;
 import com.crackncrunch.amplain.flow.TreeKeyDispatcher;
 import com.crackncrunch.amplain.mortar.ScreenScoper;
+import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
 import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.mvp.views.IView;
@@ -136,6 +137,11 @@ public class SplashActivity extends AppCompatActivity implements IRootView {
     @Override
     public void initDrawer(UserInfoDto userInfoDto) {
 
+    }
+
+    @Override
+    public void setMenuItemChecked(AbstractPresenter presenter) {
+        //empty
     }
 
     //endregion

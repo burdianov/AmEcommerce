@@ -41,6 +41,7 @@ import com.crackncrunch.amplain.di.modules.RootModule;
 import com.crackncrunch.amplain.di.scopes.RootScope;
 import com.crackncrunch.amplain.flow.TreeKeyDispatcher;
 import com.crackncrunch.amplain.mvp.models.AccountModel;
+import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
 import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
 import com.crackncrunch.amplain.mvp.views.IActionBarView;
@@ -273,6 +274,28 @@ public class RootActivity extends AppCompatActivity
                 .into(avatar);
 
         username.setText(userInfoDto.getName());
+    }
+
+    @Override
+    public void setMenuItemChecked(AbstractPresenter presenter) {
+        int id = 0;
+        switch (presenter.getClass().getSimpleName()) {
+            case "AccountPresenter":
+                id = R.id.nav_account;
+                break;
+            case "CatalogPresenter":
+                id = R.id.nav_catalog;
+                break;
+            case "FavoritePresenter":
+                id = R.id.nav_favorites;
+                break;
+            case "CartPresenter":
+                id = R.id.nav_orders;
+                break;
+        }
+        if (id != 0) {
+            mNavigationView.getMenu().findItem(id).setChecked(true);
+        }
     }
 
     //endregion

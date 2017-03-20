@@ -3,6 +3,7 @@ package com.crackncrunch.amplain.mvp.views;
 import android.support.annotation.Nullable;
 
 import com.crackncrunch.amplain.data.storage.dto.UserInfoDto;
+import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 
 /**
  * Created by Lilian on 21-Feb-17.
@@ -18,4 +19,5 @@ public interface IRootView extends IView {
     IView getCurrentScreen();
 
     void initDrawer(UserInfoDto userInfoDto);
+    void setMenuItemChecked(AbstractPresenter presenter);
 }

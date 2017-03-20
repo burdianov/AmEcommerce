@@ -33,6 +33,7 @@ public abstract class AbstractPresenter<V extends AbstractView,
     protected RootPresenter mRootPresenter;
 
     protected CompositeSubscription mCompSubs;
+
     protected abstract void initActionBar();
     protected abstract void initFab();
     protected abstract void initDagger(MortarScope scope);
@@ -49,6 +50,7 @@ public abstract class AbstractPresenter<V extends AbstractView,
         mCompSubs = new CompositeSubscription();
         initActionBar();
         initFab();
+        setMenuItemChecked();
     }
 
     @Override
@@ -87,5 +89,11 @@ public abstract class AbstractPresenter<V extends AbstractView,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
+    }
+
+    private void setMenuItemChecked() {
+        if (getRootView() != null) {
+            getRootView().setMenuItemChecked(this);
+        }
     }
 }
