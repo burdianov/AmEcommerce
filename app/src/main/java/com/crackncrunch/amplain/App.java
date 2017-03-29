@@ -25,10 +25,10 @@ public class App extends Application {
 
     private static AppComponent sAppComponent;
     private static Context sContext;
+    private static RootActivity.RootComponent mRootComponent;
 
     private MortarScope mRootScope;
     private MortarScope mRootActivityScope;
-    private static RootActivity.RootComponent mRootActivityRootComponent;
 
     @Override
     public Object getSystemService(String name) {
@@ -39,7 +39,6 @@ public class App extends Application {
         } else {
             return super.getSystemService(name);
         }
-
     }
 
     @Override
@@ -58,7 +57,7 @@ public class App extends Application {
                 .build("Root");
 
         mRootActivityScope = mRootScope.buildChild()
-                .withService(DaggerService.SERVICE_NAME, mRootActivityRootComponent)
+                .withService(DaggerService.SERVICE_NAME, mRootComponent)
                 .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner())
                 .build(RootActivity.class.getName());
 
@@ -77,15 +76,15 @@ public class App extends Application {
     }
 
     private void createRootActivityComponent() {
-       mRootActivityRootComponent = DaggerRootActivity_RootComponent.builder()
+       mRootComponent = DaggerRootActivity_RootComponent.builder()
                .appComponent(sAppComponent)
                .rootModule(new RootModule())
                .picassoCacheModule(new PicassoCacheModule())
                .build();
     }
 
-    public static RootActivity.RootComponent getmRootActivityRootComponent() {
-        return mRootActivityRootComponent;
+    public static RootActivity.RootComponent getRootActivityRootComponent() {
+        return mRootComponent;
     }
 
     public static Context getContext() {

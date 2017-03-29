@@ -42,7 +42,7 @@ public class SplashActivity extends AppCompatActivity implements IRootView {
     @Override
     protected void attachBaseContext(Context newBase) {
         newBase = Flow.configure(newBase, this)
-                .defaultKey(new AuthScreen())
+                .defaultKey(new AuthScreen(""))
                 .dispatcher(new TreeKeyDispatcher(this))
                 .install();
         super.attachBaseContext(newBase);
@@ -141,6 +141,11 @@ public class SplashActivity extends AppCompatActivity implements IRootView {
 
     @Override
     public void setMenuItemChecked(AbstractPresenter presenter) {
+        //empty
+    }
+
+    @Override
+    public void updateCartCounter(int count) {
         //empty
     }
 

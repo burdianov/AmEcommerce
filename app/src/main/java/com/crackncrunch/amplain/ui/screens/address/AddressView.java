@@ -3,6 +3,7 @@ package com.crackncrunch.amplain.ui.screens.address;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.crackncrunch.amplain.R;
@@ -15,6 +16,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AddressView extends AbstractView<AddressScreen.AddressPresenter>
         implements IAddressView {
@@ -31,11 +33,13 @@ public class AddressView extends AbstractView<AddressScreen.AddressPresenter>
     EditText mNumberFloorEt;
     @BindView(R.id.comment_et)
     EditText mCommentEt;
+    @BindView(R.id.add_btn)
+    Button mAddBtn;
 
     @Inject
     AddressScreen.AddressPresenter mPresenter;
 
-    private String mAddressId;
+    private int mAddressId;
 
     public AddressView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -121,6 +125,15 @@ public class AddressView extends AbstractView<AddressScreen.AddressPresenter>
     @Override
     public boolean viewOnBackPressed() {
         return false;
+    }
+
+    //endregion
+
+    //region ==================== Events ===================
+
+    @OnClick(R.id.add_btn)
+    void AddAddress() {
+        mPresenter.clickOnAddAddress();
     }
 
     //endregion

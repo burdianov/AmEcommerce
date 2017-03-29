@@ -7,6 +7,7 @@
     <color name="social_btn_background">#80000000</color>
     <color name="grey">#5D5D5D</color>
     <color name="grey_light">#EDEFF3</color>
+    <color name="grey_dark">#474A4F</color>
 
     <color name="color_warning">#EF5350</color>
     <color name="color_black">@android:color/black</color>

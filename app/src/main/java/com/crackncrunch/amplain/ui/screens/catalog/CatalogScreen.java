@@ -2,6 +2,7 @@ package com.crackncrunch.amplain.ui.screens.catalog;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
@@ -16,6 +17,7 @@ import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
 import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
 import com.crackncrunch.amplain.ui.screens.auth.AuthScreen;
+import com.crackncrunch.amplain.ui.screens.cart.CartScreen;
 import com.crackncrunch.amplain.ui.screens.product.ProductScreen;
 import com.squareup.picasso.Picasso;
 
@@ -96,14 +98,14 @@ public class CatalogScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         protected void initActionBar() {
+            View.OnClickListener listener = item -> {
+                Flow.get(getView()).set(new CartScreen());
+            };
+
             mRootPresenter.newActionBarBuilder()
                     .setTitle("Catalog")
-                    .addAction(new MenuItemHolder("To Cart",
-                            R.drawable.ic_shopping_basket_black_24dp,
-                            item -> {
-                                getRootView().showMessage("Go to Cart");
-                                return true;
-                            }))
+                    .addAction(new MenuItemHolder("To Cart", R.layout
+                            .icon_count_basket, listener))
                     .build();
         }
 
@@ -115,12 +117,21 @@ public class CatalogScreen extends AbstractScreen<RootActivity.RootComponent> {
         @Override
         public void clickOnBuyButton(int position) {
             if (getView() != null) {
-                if (checkUserAuth()) {
+                if (checkUserAuth() && getRootView() != null) {
                     getView().getCurrentProductView().startAddToCartAnim();
+                    addBasketCounter();
+                    getRootView().showMessage("Item " + getView()
+                            .getCurrentProductView().getProductRealm()
+                            .getProductName() + " added successfully to cart");
+                    mModel.addOrder(getView().getCurrentProductView().getProductRealm());
                 } else {
-                    Flow.get(getView()).set(new AuthScreen());
+                    Flow.get(getView()).set(new AuthScreen("Catalog"));
                 }
             }
+        }
+
+        private void addBasketCounter() {
+            mModel.addBasketCounter();
         }
 
         private Subscription subscribeOnProductRealmObs() {

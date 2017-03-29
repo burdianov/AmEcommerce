@@ -2,6 +2,7 @@ package com.crackncrunch.amplain.ui.screens.product_details;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import com.crackncrunch.amplain.BuildConfig;
 import com.crackncrunch.amplain.R;
@@ -15,10 +16,13 @@ import com.crackncrunch.amplain.mvp.models.DetailModel;
 import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
 import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
+import com.crackncrunch.amplain.ui.activities.RootActivity;
+import com.crackncrunch.amplain.ui.screens.cart.CartScreen;
 import com.crackncrunch.amplain.ui.screens.catalog.CatalogScreen;
 import com.squareup.picasso.Picasso;
 
 import dagger.Provides;
+import flow.Flow;
 import flow.TreeKey;
 import io.realm.Realm;
 import mortar.MortarScope;
@@ -28,19 +32,20 @@ import mortar.MortarScope;
  */
 
 @Screen(R.layout.screen_detail)
-public class DetailScreen extends AbstractScreen<CatalogScreen.Component>
+public class DetailScreen extends AbstractScreen<RootActivity.RootComponent>
         implements TreeKey {
 
     private final ProductRealm mProductRealm;
+    private AbstractScreen<RootActivity.RootComponent> mParentScreen;
 
-    public DetailScreen(ProductRealm product) {
+    public DetailScreen(ProductRealm product, AbstractScreen<RootActivity.RootComponent> parentScreen) {
         mProductRealm = product;
     }
 
     @Override
-    public Object createScreenComponent(CatalogScreen.Component parentComponent) {
+    public Object createScreenComponent(RootActivity.RootComponent mParentScreen) {
         return DaggerDetailScreen_Component.builder()
-                .component(parentComponent)
+                .rootComponent(mParentScreen)
                 .module(new Module())
                 .build();
     }
@@ -69,7 +74,7 @@ public class DetailScreen extends AbstractScreen<CatalogScreen.Component>
 
     }
 
-    @dagger.Component(dependencies = CatalogScreen.Component.class,
+    @dagger.Component(dependencies = RootActivity.RootComponent.class,
             modules = Module.class)
     @DaggerScope(DetailScreen.class)
     public interface Component {
@@ -96,15 +101,15 @@ public class DetailScreen extends AbstractScreen<CatalogScreen.Component>
 
         @Override
         protected void initActionBar() {
+            View.OnClickListener listener = item -> {
+                Flow.get(getView()).set(new CartScreen());
+            };
+
             mRootPresenter.newActionBarBuilder()
                     .setTitle(mProduct.getProductName())
                     .setBackArrow(true)
-                    .addAction(new MenuItemHolder("Add to Cart",
-                            R.drawable.ic_shopping_basket_black_24dp,
-                            item -> {
-                                getRootView().showMessage("Go to Cart");
-                                return true;
-                            }))
+                    .addAction(new MenuItemHolder("В корзину", R.layout
+                            .icon_count_basket, listener))
                     .setTab(getView().getViewPager())
                     .build();
         }

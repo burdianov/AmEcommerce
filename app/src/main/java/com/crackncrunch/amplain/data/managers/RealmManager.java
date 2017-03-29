@@ -2,12 +2,9 @@ package com.crackncrunch.amplain.data.managers;
 
 import com.crackncrunch.amplain.data.network.res.CommentRes;
 import com.crackncrunch.amplain.data.network.res.ProductRes;
-import com.crackncrunch.amplain.data.storage.dto.UserAddressDto;
 import com.crackncrunch.amplain.data.storage.realm.CommentRealm;
+import com.crackncrunch.amplain.data.storage.realm.OrdersRealm;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
-import com.crackncrunch.amplain.data.storage.realm.UserAddressRealm;
-
-import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -21,26 +18,7 @@ import rx.Observable;
 public class RealmManager {
 
     private Realm mRealmInstance;
-
-    public void saveNewAddressToRealm(UserAddressDto userAddressDto) {
-        if (userAddressDto.getId() == null) {
-            userAddressDto.setId(UUID.randomUUID().toString());
-        }
-
-        Realm realm = Realm.getDefaultInstance();
-
-        UserAddressRealm userAddressRealm = new UserAddressRealm(userAddressDto);
-
-        realm.executeTransaction(realm1 -> realm1.insertOrUpdate(userAddressRealm));
-        realm.close();
-    }
-
-    public RealmResults<UserAddressRealm> getAllAddressesFromRealm() {
-        RealmResults<UserAddressRealm> addresses = getQueryRealmInstance()
-                .where(UserAddressRealm.class).findAll();
-
-        return addresses;
-    }
+    private int mOrderId;
 
     public void saveProductResponseToRealm(ProductRes productRes) {
         Realm realm = Realm.getDefaultInstance();
@@ -83,6 +61,42 @@ public class RealmManager {
                 .filter(RealmResults::isLoaded) // получаем только загруженные результаты (hot Observable)
                 //.first() // convert a hot observable into a cold one
                 .flatMap(Observable::from); // преобразуем в Observable<ProductRealm>
+    }
+
+    public RealmResults<ProductRealm> getAllFavoriteProducts() {
+        RealmResults<ProductRealm> likeQuotes = getQueryRealmInstance().where(ProductRealm.class).equalTo("favorite", true).findAll();
+        return likeQuotes;
+    }
+
+    public void addOrder(ProductRealm productRealm) {
+        Realm realm = Realm.getDefaultInstance();
+
+        OrdersRealm order = new OrdersRealm(productRealm, getOrderId());
+
+        realm.executeTransaction(realm1 -> realm1.insertOrUpdate(order)); //добавляем или обновляем продукт в корзине
+
+        realm.close();
+    }
+
+    public RealmResults<OrdersRealm> getAllOrders() {
+        RealmResults<OrdersRealm> orders = getQueryRealmInstance().where(OrdersRealm.class).findAllSorted("id");
+        return orders;
+    }
+
+    public int getOrderId() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            mOrderId = realm.where(OrdersRealm.class).max("id").intValue() + 1;
+        } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
+            mOrderId = 0;
+        }
+        realm.close();
+        return mOrderId;
+    }
+
+    public RealmResults<ProductRealm> getProductInCart() {
+        return  getQueryRealmInstance().where(ProductRealm.class)
+                .greaterThan("count", 0).findAll();
     }
 
     private Realm getQueryRealmInstance() {

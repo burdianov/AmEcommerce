@@ -1,12 +1,10 @@
 package com.crackncrunch.amplain.data.network.res;
 
+import android.support.annotation.Nullable;
+
 import com.squareup.moshi.Json;
 
 import java.util.List;
-
-/**
- * Created by Lilian on 11-Mar-17.
- */
 
 public class UserRes {
     @Json(name = "_id")
@@ -14,8 +12,19 @@ public class UserRes {
     private String fullName;
     private String avatarUrl;
     private String token;
+    @Nullable
     private String phone;
+    @Nullable
     private List<UserAddressRes> addresses;
+
+    public UserRes(String id, String fullName, String avatarUrl, String token, String phone, List<UserAddressRes> addresses) {
+        this.id = id;
+        this.fullName = fullName;
+        this.avatarUrl = avatarUrl;
+        this.token = token;
+        this.phone = phone;
+        this.addresses = addresses;
+    }
 
     public String getId() {
         return id;
@@ -33,6 +42,7 @@ public class UserRes {
         return token;
     }
 
+    @Nullable
     public String getPhone() {
         return phone;
     }

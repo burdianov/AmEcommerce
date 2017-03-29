@@ -14,11 +14,11 @@ import java.util.ArrayList;
  * Created by Lilian on 13-Feb-17.
  */
 public class ViewHelper {
-    public static float getDensity(Context context) {
+    public static int getDensity(Context context) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.density;
+        return (int) displayMetrics.density;
     }
 
     public static ArrayList<View> getChildrenExcludeView(

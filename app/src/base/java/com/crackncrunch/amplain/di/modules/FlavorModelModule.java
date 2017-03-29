@@ -3,7 +3,7 @@ package com.crackncrunch.amplain.di.modules;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.crackncrunch.amplain.App;
-import com.crackncrunch.amplain.utils.AppConfig;
+import com.crackncrunch.amplain.AppConfig;
 
 import dagger.Module;
 import dagger.Provides;

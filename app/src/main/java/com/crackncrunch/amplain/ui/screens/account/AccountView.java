@@ -304,6 +304,11 @@ public class AccountView extends AbstractView<AccountScreen.AccountPresenter>
 
     //region ==================== Events ===================
 
+    @OnClick(R.id.collapsing_toolbar)
+    void testEditMode() {
+        mPresenter.switchViewState();
+    }
+
     @OnClick(R.id.add_address_btn)
     void clickAddAddress() {
         mPresenter.onClickAddress();

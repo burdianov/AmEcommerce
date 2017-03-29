@@ -42,6 +42,9 @@ android {
             }
         }
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -51,40 +54,41 @@ dependencies {
     })
     // Unit Tests
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.7.14'
+    testCompile 'org.mockito:mockito-core:2.7.19'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.4.2'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
 
     // Instrumentation Tests
-    androidTestCompile 'com.android.support:support-annotations:25.2.0'
+    androidTestCompile 'com.android.support:support-annotations:25.3.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
 
     // Support Library
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support:support-v4:25.2.0'
-    compile 'com.android.support:cardview-v7:25.2.0'
+    compile "com.android.support:appcompat-v7:25.3.1"
+    compile "com.android.support:design:25.3.1"
+    compile "com.android.support:support-v4:25.3.1"
+    compile "com.android.support:cardview-v7:25.3.1"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     // ButterKnife
-    compile 'com.jakewharton:butterknife:8.4.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
     // CircleImageView
     compile 'de.hdodenhof:circleimageview:2.1.0'
 
     // Dagger 2
-    compile 'com.google.dagger:dagger:2.6'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.6'
+    compile 'com.google.dagger:dagger:2.10'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
 
     // Retrofit 2
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-moshi:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-moshi:2.2.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.2.0'
 
     // Okhttp3
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 
     // Picasso
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
@@ -95,11 +99,11 @@ dependencies {
     compile 'com.squareup.mortar:mortar:0.20'
 
     // RxJava and RxAndroid
-    compile 'io.reactivex:rxjava:1.2.3'
+    compile 'io.reactivex:rxjava:1.2.9'
     compile 'io.reactivex:rxandroid:1.2.1'
 
     // Gson
-    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.google.code.gson:gson:2.8.0'
 
     // Stetho
     compile 'com.facebook.stetho:stetho:1.4.2'
@@ -116,4 +120,7 @@ dependencies {
 
     // CircleIndicator
     compile 'me.relex:circleindicator:1.2.2@aar'
+
+    // RealmRecyclerViewAdapter
+    compile 'io.realm:android-adapters:1.4.0'
 }

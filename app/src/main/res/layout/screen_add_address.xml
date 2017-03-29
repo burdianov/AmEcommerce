@@ -5,8 +5,16 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
+    android:paddingBottom="@dimen/spacing_normal_16"
     android:paddingLeft="@dimen/spacing_normal_16"
     android:paddingRight="@dimen/spacing_normal_16">
+
+    <Button
+        android:id="@+id/add_btn"
+        style="@style/CustomButtonAccount"
+        android:layout_gravity="bottom"
+        android:text="@string/add_address"
+        android:theme="@style/StartBtn"/>
 
     <LinearLayout
         android:layout_width="match_parent"

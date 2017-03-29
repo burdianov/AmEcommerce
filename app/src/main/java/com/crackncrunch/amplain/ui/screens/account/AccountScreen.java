@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.view.View;
 
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.storage.dto.ActivityResultDto;
@@ -26,6 +27,7 @@ import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
 import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
 import com.crackncrunch.amplain.ui.screens.address.AddressScreen;
+import com.crackncrunch.amplain.ui.screens.cart.CartScreen;
 import com.crackncrunch.amplain.utils.ConstantsManager;
 
 import java.io.File;
@@ -114,19 +116,14 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         protected void initActionBar() {
-            int drawable;
-            if (mCustomState == AccountView.EDIT_STATE) {
-                drawable = R.drawable.ic_done_black_24dp;
-            } else {
-                drawable = R.drawable.ic_edit_black_24dp;
-            }
+            View.OnClickListener listener = item -> {
+                Flow.get(getView()).set(new CartScreen());
+            };
+
             mRootPresenter.newActionBarBuilder()
                     .setTitle("Personal Profile")
-                    .addAction(new MenuItemHolder("To Cart", drawable,
-                            item -> {
-                                switchViewState();
-                                return true;
-                            }))
+                    .addAction(new MenuItemHolder("To Cart", R.layout
+                            .icon_count_basket, listener))
                     .build();
         }
 
@@ -179,7 +176,7 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
         //region ==================== Subscription ===================
 
         private void subscribeOnUserInfoObs() {
-            mUserInfoSub = subscribe(mAccountModel.getUserInfoObs(),
+            mUserInfoSub = subscribe(mAccountModel.getUserInfoSbj(),
                     new ViewSubscriber<UserInfoDto>() {
                 @Override
                 public void onNext(UserInfoDto userInfoDto) {
@@ -216,7 +213,7 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         private void subscribeOnActivityResult() {
             Observable<ActivityResultDto> activityResultObs =
-                    mRootPresenter.getActivityResultDtoObs()
+                    mRootPresenter.getActivityResultSubject()
                         .filter(activityResultDto -> activityResultDto.getResultCode() == Activity
                             .RESULT_OK);
 
@@ -230,7 +227,7 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         private void handleActivityResult(ActivityResultDto activityResultDto) {
             switch (activityResultDto.getRequestCode()) {
-                case ConstantsManager.REQUEST_PROFILE_PHOTO_PICKER:
+                case ConstantsManager.REQUEST_PROFILE_PHOTO_GALLERY:
                     if (activityResultDto.getIntent() != null) {
                         String photoUrl = activityResultDto.getIntent().getData()
                                 .toString();
@@ -264,7 +261,6 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
             if (getView() != null) {
                 getView().changeState();
             }
-            initActionBar();
         }
 
         @Override
@@ -348,7 +344,7 @@ public class AccountScreen extends AbstractScreen<RootActivity.RootComponent> {
             }
             if (getRootView() != null) {
                 ((RootActivity) getRootView()).startActivityForResult(intent,
-                        ConstantsManager.REQUEST_PROFILE_PHOTO_PICKER);
+                        ConstantsManager.REQUEST_PROFILE_PHOTO_GALLERY);
             }
         }
 

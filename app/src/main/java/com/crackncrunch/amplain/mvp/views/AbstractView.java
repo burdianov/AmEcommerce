@@ -10,8 +10,9 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 
-public abstract class AbstractView<P extends AbstractPresenter> extends FrameLayout
-        implements IView {
+public abstract class AbstractView<P extends AbstractPresenter>
+        extends FrameLayout implements IView {
+
     @Inject
     protected P mPresenter;
 
@@ -23,6 +24,23 @@ public abstract class AbstractView<P extends AbstractPresenter> extends FrameLay
     }
 
     protected abstract void initDagger(Context context);
+
+    /**
+     * Действия которые необходимо свершить по окончанию инфлейта вью (тут заглушка переопределить при необходимости)
+     */
+    protected void afterInflate() {
+
+    }
+
+    /**
+     * Действия которые необходимо свершить перед дропом вью (тут заглушка переопределить при необходимости)
+     */
+    protected void beforeDrop() {
+
+    }
+
+    protected void startInitAnimation() {
+    }
 
     @Override
     protected void onAttachedToWindow() {
@@ -36,6 +54,7 @@ public abstract class AbstractView<P extends AbstractPresenter> extends FrameLay
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (!isInEditMode()) {
+            beforeDrop();
             mPresenter.dropView(this);
         }
     }
@@ -44,5 +63,7 @@ public abstract class AbstractView<P extends AbstractPresenter> extends FrameLay
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.bind(this);
+        afterInflate();
+        startInitAnimation();
     }
 }

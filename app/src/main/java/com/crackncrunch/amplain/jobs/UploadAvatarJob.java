@@ -8,8 +8,8 @@ import android.util.Log;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
+import com.crackncrunch.amplain.AppConfig;
 import com.crackncrunch.amplain.data.managers.DataManager;
-import com.crackncrunch.amplain.utils.AppConfig;
 
 import java.io.File;
 

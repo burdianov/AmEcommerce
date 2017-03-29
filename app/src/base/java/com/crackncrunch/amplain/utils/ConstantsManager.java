@@ -12,10 +12,13 @@ public class ConstantsManager {
     public static final String INVALID_TOKEN = "INVALID_TOKEN";
     public static final String PHOTO_FILE_PREFIX = "IMG_";
 
+    public static final int PICK_PHOTO_FROM_GALLERY = 111;
+    public static final int PICK_PHOTO_FROM_CAMERA = 222;
+
     public static final int REQUEST_PERMISSION_CAMERA = 3000;
     public static final int REQUEST_PERMISSION_READ_WRITE_STORAGE = 3001;
 
-    public static final int REQUEST_PROFILE_PHOTO_PICKER = 1001;
+    public static final int REQUEST_PROFILE_PHOTO_GALLERY = 1001;
     public static final int REQUEST_PROFILE_PHOTO_CAMERA = 1002;
     public static final String FILE_PROVIDER_AUTHORITY = "com.crackncrunch" +
             ".amplain.fileprovider";

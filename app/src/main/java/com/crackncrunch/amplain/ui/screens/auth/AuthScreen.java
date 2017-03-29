@@ -1,33 +1,34 @@
 package com.crackncrunch.amplain.ui.screens.auth;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.di.DaggerService;
-import com.crackncrunch.amplain.di.scopes.AuthScope;
+import com.crackncrunch.amplain.di.scopes.DaggerScope;
 import com.crackncrunch.amplain.flow.AbstractScreen;
 import com.crackncrunch.amplain.flow.Screen;
 import com.crackncrunch.amplain.mvp.models.AuthModel;
+import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.IAuthPresenter;
-import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
-import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
 import com.crackncrunch.amplain.ui.activities.SplashActivity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import dagger.Provides;
+import flow.Flow;
 import mortar.MortarScope;
-import mortar.ViewPresenter;
 
 @Screen(R.layout.screen_auth)
 public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     private int mCustomState = 1;
+    private String mScreen;
+
+    public AuthScreen(String screen) {
+        mScreen = screen;
+    }
 
     public void setCustomState(int customState) {
         mCustomState = customState;
@@ -48,15 +49,15 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
     //region ==================== DI ===================
 
     @dagger.Module
-    public class Module {
+    public static class Module {
         @Provides
-        @AuthScope
+        @DaggerScope(AuthScreen.class)
         AuthPresenter providePresenter() {
             return new AuthPresenter();
         }
 
         @Provides
-        @AuthScope
+        @DaggerScope(AuthScreen.class)
         AuthModel provideAuthModel() {
             return new AuthModel();
         }
@@ -64,7 +65,7 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     @dagger.Component(dependencies = RootActivity.RootComponent.class,
             modules = Module.class)
-    @AuthScope
+    @DaggerScope(AuthScreen.class)
     public interface Component {
         void inject(AuthPresenter presenter);
         void inject(AuthView view);
@@ -74,50 +75,51 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     //region ==================== Presenter ===================
 
-    public static class AuthPresenter extends ViewPresenter<AuthView> implements
-    IAuthPresenter {
+    public static class AuthPresenter
+            extends AbstractPresenter<AuthView, AuthModel>
+            implements IAuthPresenter {
 
-        @Inject
-        AuthModel mAuthModel;
-        @Inject
-        RootPresenter mRootPresenter;
+        public AuthPresenter() {
+        }
+
+        protected void initActionBar() {
+            if (getRootView() instanceof RootActivity) {
+                mRootPresenter.newActionBarBuilder()
+                        .setTitle("Authorization")
+                        .setBackArrow(true)
+                        .build();
+            }
+        }
 
         @Override
+        protected void initFab() {
+            // empty
+        }
+
+        @Override
+        protected void initDagger(MortarScope scope) {
+            ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
+        }
+
+        /*@Override
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME))
                     .inject(this);
-        }
-
-        public AuthPresenter() {
-
-        }
-
-        // for test
-        public AuthPresenter(AuthModel authModel, RootPresenter rootPresenter) {
-            mAuthModel = authModel;
-            mRootPresenter = rootPresenter;
-        }
+        }*/
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
-            if (getView() != null) {
+            final AuthView view = getView();
+            if (view != null) {
                 if (checkUserAuth()) {
-                    getView().hideLoginBtn();
+                    view.hideLoginBtn();
                 } else {
-                    getView().showLoginBtn();
+                    view.showLoginBtn();
                 }
-                getView().setTypeface();
-            } else {
-                getRootView().showError(new NullPointerException("Something is wrong"));
             }
-        }
-
-        @Nullable
-        private IRootView getRootView() {
-            return mRootPresenter.getRootView();
         }
 
         @Override
@@ -126,11 +128,25 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                 if (getView().isIdle()) {
                     getView().showLoginWithAnim();
                 } else {
-                    // TODO: 21-Oct-16 auth user
-                    mAuthModel.loginUser(getView().getUserEmail(),getView().getUserPassword());
-                    getRootView().showMessage("request for user request");
+                    String email = getView().getUserEmail();
+                    String pass = getView().getUserPassword();
+                    if (isValidEmail(email) && isValidPassword(pass)) {
+                        loginUser(email, pass);
+                    } else {
+                        getView().invalidLoginAnimation();
+                        getRootView().showMessage(getView().getContext().getString(R.string.email_or_password_wrong_format));
+                    }
                 }
             }
+        }
+
+        private void loginUser(String userEmail, String userPassword) {
+            mModel.signInUser(userEmail, userPassword)
+                    .subscribe(userRes -> {
+                            },
+                            throwable -> {
+                                getRootView().showError(throwable);
+                            }, this::onLoginSuccess);
         }
 
         @Override
@@ -159,21 +175,44 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
             if (getRootView() != null) {
                 if (getRootView() instanceof SplashActivity) {
                     ((SplashActivity) getRootView()).startRootActivity();
+                    ((SplashActivity) getRootView()).overridePendingTransition(R.anim.enter_pull_in, R.anim.exit_fade_out);
+
                 } else {
-                    // TODO: 22-Feb-17 show Catalog Screen
+                    //noinspection CheckResult
+                    Flow.get(getView()).goBack();
                 }
             }
         }
 
         @Override
         public boolean checkUserAuth() {
-            return mAuthModel.isAuthUser();
+            return mModel.isAuthUser();
+        }
+
+        public void onLoginSuccess() {
+            if (getView() != null && getRootView() != null) {
+                getRootView().showMessage(getView().getContext().getString(R.string.authentication_successful));
+                getView().hideLoginBtn();
+                getView().showIdleWithAnim();
+            }
         }
 
         public boolean isValidEmail(CharSequence target) {
-            Pattern pattern = Pattern.compile("^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$");
-            Matcher matcher = pattern.matcher(target);
-            return matcher.matches();
+            if (getView() != null) {
+                Pattern pattern = Pattern.compile(getView().getContext().getString(R.string.email_valid_reg_exp));
+                Matcher matcher = pattern.matcher(target);
+                return matcher.matches();
+            } else {
+                return false;
+            }
+        }
+
+        public boolean isValidPassword(CharSequence target) {
+            if (getView() != null) {
+                return target.length() > 8;
+            } else {
+                return false;
+            }
         }
     }
 

@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.storage.dto.ProductDto;
+import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
 import com.crackncrunch.amplain.di.DaggerService;
 import com.crackncrunch.amplain.mvp.views.AbstractView;
 import com.crackncrunch.amplain.mvp.views.IProductView;
@@ -119,6 +120,10 @@ public class ProductView extends AbstractView<ProductScreen.ProductPresenter> im
                                 .into(mProductImage);
                     }
                 });
+    }
+
+    public ProductRealm getProductRealm() {
+        return mPresenter.getProduct();
     }
 
     @Override

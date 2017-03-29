@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Fonts -->
     <string name="roboto_regular">sans-serif</string>
     <string name="roboto_light">sans-serif-light</string>
@@ -106,4 +106,30 @@
     <string name="can_not_be_empty">The comment field can not be empty</string>
     <string name="rate_this_product">Rate this product</string>
     <string name="product_added">Product added to Cart</string>
+
+    <!-- FavoriteScreen -->
+    <string name="favorite_title">Favorites</string>
+    <string name="favorite_price_mask">%d.-</string>
+    <string name="favorite_removing_dialog_title">Remove from Favorites</string>
+    <string name="favorite_removing_dialog_message">Are you sure you want to
+        remove &lt;b>%s&lt;/b> from favorites?</string>
+    <string name="favorite_removing_dialog_yes">Yes</string>
+    <string name="favorite_removing_dialog_no">No</string>
+
+    <!-- CartScreen -->
+    <string name="cart_product_amount">Number of items:</string>
+    <string name="cart_discount">Discount:</string>
+    <string name="cart_total">Total:</string>
+    <string name="cart_submit_order">Place order</string>
+    <string name="cart_item_remove">Remove</string>
+    <string name="cart_item_price">Price:</string>
+    <string name="cart_item_amount">Quantity:</string>
+    <string name="cart_item_subtotal">Стоимость:</string>
+    <string name="title_auth">Authorization</string>
+    <string name="email_valid_reg_exp" formatted="false" tools:ignore="TypographyDashes" ><![CDATA[(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])]]></string>
+
+    // Auth
+    <string name="email_or_password_wrong_format">Incorrect format of
+        Email or Password</string>
+    <string name="authentication_successful">Authentication Successful</string>
 </resources>

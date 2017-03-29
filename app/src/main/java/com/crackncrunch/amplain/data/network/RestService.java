@@ -27,12 +27,13 @@ import rx.Observable;
 public interface RestService {
     @GET("products")
     Observable<Response<List<ProductRes>>> getProductResObs
-    (@Header(ConstantsManager.IF_MODIFIED_SINCE_HEADER) String
+        (@Header(ConstantsManager.IF_MODIFIED_SINCE_HEADER) String
              lastEntityUpdate);
 
     @POST("products/{productId}/comments")
-    Observable<CommentRes> sendComment(@Path("productId") String productId,
-                                       @Body CommentRes commentRes);
+    Observable<CommentRes> sendCommentToServer
+            (@Path("productId") String productId,
+             @Body CommentRes commentRes);
 
     @Multipart
     @POST("avatar")

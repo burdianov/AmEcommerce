@@ -19,7 +19,7 @@ public class CatalogModel extends AbstractModel {
     }
 
     public boolean isUserAuth() {
-        return mDataManager.isAuthUser();
+        return mDataManager.getPreferencesManager().isUserAuth();
     }
 
     public Observable<ProductRealm> getProductObs() {
@@ -38,5 +38,17 @@ public class CatalogModel extends AbstractModel {
     @RxLogObservable
     public Observable<ProductRealm> fromDisk() {
         return mDataManager.getProductFromRealm();
+    }
+
+    public void addOrder(ProductRealm product) {
+        mDataManager.addOrderFromRealm(product);
+    }
+
+    public void addBasketCounter() {
+        mDataManager.getPreferencesManager().saveBasketCounter(mDataManager.getPreferencesManager().getBasketCounter() + 1);
+    }
+
+    public void saverCartCounter(){
+        mDataManager.getPreferencesManager().saveBasketCounter(mDataManager.getRealmManager().getAllOrders().size());
     }
 }

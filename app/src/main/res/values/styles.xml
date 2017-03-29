@@ -244,4 +244,14 @@
         <item name="tabIndicatorColor">@color/colorAccent</item>
         <item name="tabIndicatorHeight">@dimen/line_size_2</item>
     </style>
+
+    <style name="CustomImageButton" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="colorControlHighlight">@color/transparent</item>
+        <item name="android:minWidth">0dp</item>
+    </style>
+
+    <style name="CustomText.AccentValue">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

@@ -7,7 +7,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class UserAddressRealm extends RealmObject {
     @PrimaryKey
-    private String id;
+    private int id;
     private String name;
     private String street;
     private String building;
@@ -30,7 +30,7 @@ public class UserAddressRealm extends RealmObject {
         this.favorite = userAddressDto.isFavorite();
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

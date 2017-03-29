@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:paddingRight="24dp">
+
+    <ImageView
+        android:id="@+id/basket_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_shopping_basket_black_24dp"/>
+
+    <TextView
+        android:id="@+id/basket_count"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignEnd="@id/basket_icon"
+        android:layout_alignRight="@id/basket_icon"
+        android:layout_alignTop="@id/basket_icon"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:background="@drawable/selector_badge_circle"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textSize="10sp"
+        android:textStyle="bold"/>
+</RelativeLayout>

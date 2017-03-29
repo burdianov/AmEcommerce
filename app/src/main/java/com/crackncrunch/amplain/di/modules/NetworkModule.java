@@ -1,8 +1,8 @@
 package com.crackncrunch.amplain.di.modules;
 
+import com.crackncrunch.amplain.AppConfig;
 import com.crackncrunch.amplain.data.network.RestService;
 import com.crackncrunch.amplain.data.network.res.CommentJsonAdapter;
-import com.crackncrunch.amplain.utils.AppConfig;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.squareup.moshi.Moshi;
 

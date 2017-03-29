@@ -1,5 +1,7 @@
 package com.crackncrunch.amplain.ui.screens.favorites;
 
+import android.content.Context;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,96 +14,101 @@ import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
 import com.crackncrunch.amplain.di.DaggerService;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmRecyclerViewAdapter;
 
-public class FavoriteAdapter extends
-        RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder> {
-
-    private List<ProductRealm> mProductsList = new ArrayList<>();
-    private FavoriteScreen.FavoritePresenter mPresenter;
+public class FavoriteAdapter extends RealmRecyclerViewAdapter<ProductRealm, FavoriteAdapter.FavoriteViewHolder> {
+    private Context context;
+    private FavoriteViewHolder.OnClickListener mListener;
+    private OrderedRealmCollection<ProductRealm> mData;
 
     @Inject
     Picasso mPicasso;
 
-    public FavoriteAdapter(FavoriteScreen.FavoritePresenter presenter) {
-        mPresenter = presenter;
-    }
-
-    public void addItem(ProductRealm productRealm) {
-        mProductsList.add(productRealm);
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        DaggerService.<FavoriteScreen.Component>getDaggerComponent(recyclerView
-                .getContext()).inject(this);
-        super.onAttachedToRecyclerView(recyclerView);
+    public FavoriteAdapter(Context context, OrderedRealmCollection<ProductRealm> data, FavoriteViewHolder.OnClickListener listener) {
+        super(context, data, true);
+        this.context = context;
+        mListener = listener;
+        mData = data;
     }
 
     @Override
     public FavoriteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View convertView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_favorite, parent, false);
-        return new FavoriteViewHolder(convertView);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_favorite, parent, false);
+        return new FavoriteViewHolder(view, mListener);
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        DaggerService.<FavoriteScreen.Component>getDaggerComponent(recyclerView.getContext()).inject(this);
+        super.onAttachedToRecyclerView(recyclerView);
     }
 
     @Override
     public void onBindViewHolder(FavoriteViewHolder holder, int position) {
-        ProductRealm product = mProductsList.get(position);
-        holder.productName.setText(product.getProductName());
-        holder.productDescription.setText(product.getDescription());
-        holder.productPrice.setText(String.valueOf(product.getPrice()));
-        String productImg = product.getImageUrl();
-        if (productImg == null || productImg.isEmpty()) {
-            productImg = "http://placehold.it/350x350";
+        ProductRealm product = mData.get(position);
+        holder.mProduct = product;
+
+        mPicasso.load(product.getImageUrl()).into(holder.mImage);
+        holder.mName.setText(product.getProductName());
+        holder.mDescription.setText(product.getDescription());
+        holder.mPrice.setText(String.valueOf(product.getPrice()));
+//        mPrice.text = context.getString(R.string.favorite_price_mask, product.price);
+    }
+
+    public static class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public ImageView mImage;
+        public TextView mName;
+        public TextView mDescription;
+        public TextView mPrice;
+        public AppCompatImageButton mFavoriteButton;
+        public AppCompatImageButton mCartButton;
+
+        private FavoriteViewHolder.OnClickListener mClickListener;
+        public ProductRealm mProduct;
+
+        public FavoriteViewHolder(View itemView, FavoriteViewHolder.OnClickListener listener) {
+            super(itemView);
+            mImage = (ImageView) itemView.findViewById(R.id.favorite_product_img);
+            mName = (TextView) itemView.findViewById(R.id.favorite_product_name);
+            mDescription = (TextView) itemView.findViewById(R.id
+                    .favorite_product_description);
+            mPrice = (TextView)  itemView.findViewById(R.id.favorite_product_price);
+            mFavoriteButton = (AppCompatImageButton) itemView.findViewById(R.id.favorite_button);
+            mCartButton = (AppCompatImageButton) itemView.findViewById(R.id.cart_button);
+
+            mClickListener = listener;
+
+            mCartButton.setOnClickListener(this);
+            mFavoriteButton.setOnClickListener(this);
+            mImage.setOnClickListener(this);
         }
 
-        mPicasso.load(productImg)
-                .error(R.drawable.product_placeholder)
-                .fit()
-                .centerInside()
-                .into(holder.productImg);
+        @Override
+        public void onClick(View v) {
+            if (mClickListener != null) {
+                switch (v.getId()) {
+                    case R.id.favorite_product_img:
+                        mClickListener.onImageClick(mProduct);
+                        break;
+                    case R.id.cart_button:
+                        mClickListener.onToCartClick(mProduct);
+                        break;
+                    case R.id.favorite_button:
+                        mClickListener.onFavoriteClick(mProduct);
+                        break;
+                }
+            }
+        }
 
-        holder.productImg.setOnClickListener(v -> {
-            mPresenter.clickOnProduct(product);
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return mProductsList.size();
-    }
-
-    public void reloadAdapter(List<ProductRealm> products) {
-        mProductsList.clear();
-        mProductsList = products;
-        notifyDataSetChanged();
-    }
-
-    public class FavoriteViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.favorite_product_img)
-        ImageView productImg;
-        @BindView(R.id.favorite_product_name)
-        TextView productName;
-        @BindView(R.id.favorite_product_description)
-        TextView productDescription;
-        @BindView(R.id.favorite_product_price)
-        TextView productPrice;
-        @BindView(R.id.favorite_basket_img)
-        ImageView basketImg;
-        @BindView(R.id.favorite_heart_img)
-        ImageView heartImg;
-
-        public FavoriteViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        interface OnClickListener {
+            void onImageClick(ProductRealm product);
+            void onFavoriteClick(ProductRealm product);
+            void onToCartClick(ProductRealm product);
         }
     }
 }
+

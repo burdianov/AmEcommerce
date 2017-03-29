@@ -20,4 +20,5 @@ public interface IRootView extends IView {
 
     void initDrawer(UserInfoDto userInfoDto);
     void setMenuItemChecked(AbstractPresenter presenter);
+    void updateCartCounter(int count);
 }

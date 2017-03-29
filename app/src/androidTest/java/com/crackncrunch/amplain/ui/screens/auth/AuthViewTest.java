@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.not;
  */
 public class AuthViewTest {
     @Rule
-    public ActivityTestRule<SplashActivity> mActivityActivityTestRule = new
+    public ActivityTestRule<SplashActivity> mActivityTestRule = new
             ActivityTestRule<SplashActivity>(SplashActivity.class);
 
     private static final String TEST_EMAIL_VALID = "anymail@mail.ru";

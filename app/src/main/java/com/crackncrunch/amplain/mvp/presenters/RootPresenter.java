@@ -1,37 +1,48 @@
 package com.crackncrunch.amplain.mvp.presenters;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import com.crackncrunch.amplain.App;
 import com.crackncrunch.amplain.R;
+import com.crackncrunch.amplain.data.storage.dto.ActivityPermissionsResultDto;
 import com.crackncrunch.amplain.data.storage.dto.ActivityResultDto;
-import com.crackncrunch.amplain.data.storage.dto.UserInfoDto;
+import com.crackncrunch.amplain.di.DaggerService;
 import com.crackncrunch.amplain.mvp.models.AccountModel;
 import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
 import com.crackncrunch.amplain.ui.activities.SplashActivity;
-import com.fernandocejas.frodo.annotation.RxLogSubscriber;
+import com.crackncrunch.amplain.utils.AvatarHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import mortar.MortarScope;
 import mortar.Presenter;
 import mortar.bundler.BundleService;
-import rx.Subscriber;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
+
+import static com.crackncrunch.amplain.utils.ConstantsManager.FILE_PROVIDER_AUTHORITY;
+import static com.crackncrunch.amplain.utils.ConstantsManager.REQUEST_PROFILE_PHOTO_CAMERA;
+import static com.crackncrunch.amplain.utils.ConstantsManager.REQUEST_PROFILE_PHOTO_GALLERY;
 
 /**
  * Created by Lilian on 21-Feb-17.
@@ -44,46 +55,78 @@ public class RootPresenter extends Presenter<IRootView> {
     @Inject
     AccountModel mAccountModel;
 
+    CompositeSubscription mCompositeSubscription;
     private Subscription mUserInfoSub;
-    private PublishSubject<ActivityResultDto> mActivityResultDtoObs =
-            PublishSubject.create();
+    private String mPhotoFileUrl;
+    private PublishSubject<ActivityResultDto> mActivityResultSubject = PublishSubject.create();
+    private BehaviorSubject<ActivityPermissionsResultDto> mActivityPermissionsResultSubject = BehaviorSubject.create();
 
     public RootPresenter() {
-        App.getmRootActivityRootComponent().inject(this);
+    }
+
+    //region ==================== Getters for BehaviorSubjects ===================
+
+    public PublishSubject<ActivityResultDto> getActivityResultSubject() {
+        return mActivityResultSubject;
+    }
+
+    public BehaviorSubject<ActivityPermissionsResultDto> getActivityPermissionsResultSubject() {
+        return mActivityPermissionsResultSubject;
+    }
+
+    //endregion
+
+    @Override
+    protected void onEnterScope(MortarScope scope) {
+        super.onEnterScope(scope);
+        ((RootActivity.RootComponent) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
     }
 
     @Override
     protected BundleService extractBundleService(IRootView view) {
         return (view instanceof RootActivity) ?
                 BundleService.getBundleService((RootActivity) view) : // привязваем RootPresenter к RootActivity или SplashActivity
-                BundleService.getBundleService((SplashActivity) view);
-    }
-    public PublishSubject<ActivityResultDto> getActivityResultDtoObs() {
-        return mActivityResultDtoObs;
+                BundleService.getBundleService((SplashActivity) view); // привязываем RootPresenter к SplashActivity
     }
 
     @Override
     protected void onLoad(Bundle savedInstanceState) {
         super.onLoad(savedInstanceState);
-
+        mCompositeSubscription = new CompositeSubscription();
         if (getView() instanceof RootActivity) {
-            mUserInfoSub = subscribeOnUserInfoObs();
+            mCompositeSubscription.add(subscribeOnUserInfoObs());
+            mCompositeSubscription.add(subscribeOnProductCountSbj());
         }
     }
 
     @Override
-    protected void onExitScope() {
-        if (mUserInfoSub != null) {
-            mUserInfoSub.unsubscribe();
+    public void dropView(IRootView view) {
+        if (mCompositeSubscription.hasSubscriptions()) {
+            mCompositeSubscription.unsubscribe();
         }
-        super.onExitScope();
+        super.dropView(view);
     }
 
     private Subscription subscribeOnUserInfoObs() {
-        return mAccountModel.getUserInfoObs()
+        return mAccountModel.getUserInfoSbj()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new UserInfoSubscriber());
+                .subscribe(userInfoDto -> {
+                    if (getView() != null) {
+                        getView().initDrawer(userInfoDto);
+                    }
+                }, throwable -> {
+                    if (getView() != null) {
+                        getView().showError(throwable);
+                    }
+                });
+    }
+
+    private Subscription subscribeOnProductCountSbj() {
+        Observable<Integer> test = mAccountModel.getProductCountSbj();
+        return mAccountModel.getProductCountSbj()
+                .subscribe(cartCount -> getView().updateCartCounter(cartCount),
+                        throwable -> getView().showError(throwable));
     }
 
     @Nullable
@@ -99,40 +142,17 @@ public class RootPresenter extends Presenter<IRootView> {
         return this.new FabBuilder();
     }
 
-    @RxLogSubscriber
-    private class UserInfoSubscriber extends Subscriber<UserInfoDto> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            if (getView() != null) {
-                getView().showError(e);
-            }
-        }
-
-        @Override
-        public void onNext(UserInfoDto userInfoDto) {
-            if (getView() != null) {
-                getView().initDrawer(userInfoDto);
-            }
-        }
+    public void startActivityForResult(Intent intent, int requestCode) {
+        ((RootActivity) getView()).startActivityForResult(intent, requestCode);
     }
 
-    public boolean checkPermissionsAndRequestIfNotGranted(
-            @NonNull String[] permissions, int requestCode) {
+    public void onActivityResultHandler(int requestCode, int resultCode, Intent data) {
+        mActivityResultSubject.onNext(new ActivityResultDto(requestCode, resultCode, data));
+    }
 
+    public boolean checkPermissionsAndRequestIfNotGranted(@NonNull String[] permissions, int requestCode) {
         boolean allGranted = true;
-        for (String permission : permissions) {
-            int selfPermission = ContextCompat.checkSelfPermission(((RootActivity) getView()), permission);
-            if (selfPermission != PackageManager.PERMISSION_GRANTED) {
-                allGranted = false;
-                break;
-            }
-        }
+        allGranted = ((RootActivity) getView()).isAllGranted(permissions, allGranted);
 
         if (!allGranted) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -144,14 +164,54 @@ public class RootPresenter extends Presenter<IRootView> {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        mActivityResultDtoObs.onNext(new ActivityResultDto(requestCode,
+        mActivityResultSubject.onNext(new ActivityResultDto(requestCode,
                 resultCode, intent));
     }
 
-    // TODO: 06-Dec-16 the following method shall be verified
-    public void onRequestPermissionResult(int requestCode, @NonNull String[]
-            permissions, @NonNull int[] grantResults) {
-        // TODO: 23-Feb-17 implement me
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mActivityPermissionsResultSubject.onNext(new ActivityPermissionsResultDto(requestCode, permissions, grantResults));
+    }
+
+    public boolean checkPermissions(@NonNull String[] permissions) {
+        boolean allGranted = true;
+        for (String permission : permissions) {
+            int selfPermission = ContextCompat.checkSelfPermission(((RootActivity) getView()), permission);
+            if (selfPermission != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+        return allGranted;
+    }
+
+    public boolean requestPermissions(@NonNull String[] permissions, int requestCode) {
+        boolean isRequested = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ((RootActivity) getView()).requestPermissions(permissions, requestCode);
+            isRequested = true;
+        }
+        return isRequested;
+    }
+
+    public Observable<String> getActivityResultPublishUrlSubject() {
+        return getActivityResultSubject()
+                .filter(res -> res.getResultCode() == Activity.RESULT_OK
+                        && (res.getRequestCode() == REQUEST_PROFILE_PHOTO_GALLERY
+                        || res.getRequestCode() == REQUEST_PROFILE_PHOTO_CAMERA))
+                .map(res -> (res.getIntent() == null || res.getIntent().getData() == null ?
+                        mPhotoFileUrl :
+                        res.getIntent().getData().toString()))
+                .filter(uri -> uri != null);
+    }
+
+    // FIXME: 22.03.2017 перенести в хелпер в утилитах (неявное изменение поля класса, не надо так)
+    public Uri createFileForPhoto() {
+        File file = AvatarHelper.createFileForPhoto();
+
+        mPhotoFileUrl = Uri.fromFile(file).toString();
+
+        return FileProvider.getUriForFile((Activity) getView(),
+                FILE_PROVIDER_AUTHORITY, file);
     }
 
     public class ActionBarBuilder {

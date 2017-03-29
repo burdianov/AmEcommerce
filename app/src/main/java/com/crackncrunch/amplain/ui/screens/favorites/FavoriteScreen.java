@@ -1,6 +1,7 @@
 package com.crackncrunch.amplain.ui.screens.favorites;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
@@ -8,16 +9,19 @@ import com.crackncrunch.amplain.di.DaggerService;
 import com.crackncrunch.amplain.di.scopes.DaggerScope;
 import com.crackncrunch.amplain.flow.AbstractScreen;
 import com.crackncrunch.amplain.flow.Screen;
-import com.crackncrunch.amplain.mvp.models.CatalogModel;
+import com.crackncrunch.amplain.mvp.models.FavoriteModel;
 import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
+import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
 import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
+import com.crackncrunch.amplain.ui.screens.cart.CartScreen;
+import com.crackncrunch.amplain.ui.screens.product_details.DetailScreen;
 import com.squareup.picasso.Picasso;
 
 import dagger.Provides;
+import flow.Flow;
+import io.realm.Realm;
 import mortar.MortarScope;
-import rx.Subscriber;
-import rx.Subscription;
 
 /**
  * Created by Lilian on 03-Mar-17.
@@ -46,8 +50,8 @@ public class FavoriteScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Provides
         @DaggerScope(FavoriteScreen.class)
-        CatalogModel provideFavoriteModel() {
-            return new CatalogModel();
+        FavoriteModel provideFavoriteModel() {
+            return new FavoriteModel();
         }
     }
 
@@ -68,26 +72,33 @@ public class FavoriteScreen extends AbstractScreen<RootActivity.RootComponent> {
     //region ==================== Presenter ===================
 
     public class FavoritePresenter
-            extends AbstractPresenter<FavoriteView, CatalogModel> {
+            extends AbstractPresenter<FavoriteView, FavoriteModel> {
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
-
-            getView().initView();
-            mCompSubs.add(subscribeOnProductRealmObs());
+            getView().showFavoriteList(mModel.getAllFavorites());
         }
 
         @Override
         protected void initActionBar() {
+            View.OnClickListener listener = item -> {
+                Flow.get(getView()).set(new CartScreen());
+            };
+
             mRootPresenter.newActionBarBuilder()
-                    .setTitle("Favorite Products")
+                    .setTitle("Favorites")
+                    .setBackArrow(true)
+                    .addAction(new MenuItemHolder("To Cart", R.layout
+                            .icon_count_basket, listener))
                     .build();
         }
 
         @Override
         protected void initFab() {
-            // empty
+            mRootPresenter.newFabBuilder()
+                    .setVisible(false)
+                    .build();
         }
 
         @Override
@@ -96,35 +107,22 @@ public class FavoriteScreen extends AbstractScreen<RootActivity.RootComponent> {
                     .SERVICE_NAME)).inject(this);
         }
 
-        private Subscription subscribeOnProductRealmObs() {
-            return mModel.getProductObs()
-                    .filter(ProductRealm::isFavorite)
-                    .subscribe(new RealmSubscriber());
-        }
-
-        private class RealmSubscriber extends Subscriber<ProductRealm> {
-            FavoriteAdapter mAdapter = getView().getAdapter();
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (getRootView() != null) {
-                    getRootView().showError(e);
-                }
-            }
-
-            @Override
-            public void onNext(ProductRealm productRealm) {
-                mAdapter.addItem(productRealm);
-            }
-        }
-
         public void clickOnProduct(ProductRealm product) {
-            //Flow.get(getView()).set(new DetailScreen(product));
+            Flow.get(getView()).set(new DetailScreen(product, new FavoriteScreen()));
+        }
+
+        public void onFavoriteClick(ProductRealm product) {
+            if(getView() != null) getView().showOnRemoveFromFavoriteDialog(product);
+        }
+
+        public void onCartClick(ProductRealm product) {
+            //TODO : implement this
+        }
+
+        public void deleteProductFromFavorites(ProductRealm product) {
+            Realm realm = Realm.getDefaultInstance();
+            realm.executeTransaction(realm1 -> product.toggleFavorite());
+            realm.close();
         }
     }
 

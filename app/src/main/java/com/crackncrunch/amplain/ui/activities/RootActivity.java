@@ -3,6 +3,7 @@ package com.crackncrunch.amplain.ui.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.crackncrunch.amplain.di.modules.PicassoCacheModule;
 import com.crackncrunch.amplain.di.modules.RootModule;
 import com.crackncrunch.amplain.di.scopes.RootScope;
 import com.crackncrunch.amplain.flow.TreeKeyDispatcher;
+import com.crackncrunch.amplain.mortar.ScreenScoper;
 import com.crackncrunch.amplain.mvp.models.AccountModel;
 import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
@@ -49,6 +51,7 @@ import com.crackncrunch.amplain.mvp.views.IFabView;
 import com.crackncrunch.amplain.mvp.views.IRootView;
 import com.crackncrunch.amplain.mvp.views.IView;
 import com.crackncrunch.amplain.ui.screens.account.AccountScreen;
+import com.crackncrunch.amplain.ui.screens.auth.AuthScreen;
 import com.crackncrunch.amplain.ui.screens.catalog.CatalogScreen;
 import com.crackncrunch.amplain.ui.screens.favorites.FavoriteScreen;
 import com.squareup.picasso.Picasso;
@@ -85,13 +88,14 @@ public class RootActivity extends AppCompatActivity
     @Inject
     RootPresenter mRootPresenter;
     @Inject
-
     Picasso mPicasso;
+
     protected ProgressDialog mProgressDialog;
     private AlertDialog.Builder mExitDialog;
     private ActionBarDrawerToggle mToggle;
     private ActionBar mActionBar;
     private List<MenuItemHolder> mActionBarMenuItems;
+    private TextView mCountBasketView;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -136,8 +140,19 @@ public class RootActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStop() {
+        mRootPresenter.dropView(this);
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         mRootPresenter.dropView(this);
+        if (isFinishing()) {
+            ScreenScoper.destroyScreenScope(CatalogScreen.class.getName());
+            ScreenScoper.destroyScreenScope(AccountScreen.class.getName());
+            ScreenScoper.destroyScreenScope(AuthScreen.class.getName());
+        }
         super.onDestroy();
     }
 
@@ -186,7 +201,18 @@ public class RootActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mRootPresenter.onRequestPermissionResult(requestCode, permissions, grantResults);
+        mRootPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public boolean isAllGranted(@NonNull String[] permissions, boolean allGranted) {
+        for (String permission : permissions) {
+            int selfPermission = ContextCompat.checkSelfPermission(this, permission);
+            if (selfPermission != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+        return allGranted;
     }
 
     @Override
@@ -213,6 +239,41 @@ public class RootActivity extends AppCompatActivity
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    // TODO: 21.03.2017 перенести методы связанные с коунтером (чтение / сохранение ) в AccountModel
+    // TODO: она для RootPresenter основная т.к. в ней хранится вся информация о пользователе и колбеки (подписки) событий RootActivity
+    /*private int initBasketCounter() {
+        try {
+            count = mRootModel.getBasketCounter();
+        } catch (NullPointerException e) {
+            mRootModel.saveBasketCounter(0);
+            count = 0;
+            //            basketCounter.setText(String.valueOf(0));
+        }
+        return count;
+    }*/
+
+   /* @Override
+    public void showBasketCounter() {
+        if(mRootModel.getBasketCounter() == 0){
+            countBasketView.setVisibility(View.GONE);
+        }else{
+            countBasketView.setVisibility(View.VISIBLE);
+            countBasketView.setText(String.valueOf(mRootModel
+            .getBasketCounter()));
+        }
+    }*/
+
+    /*@Override
+    public void updateCartProductCounter() {
+        if(mRootModel.getBasketCounter() == 0){
+            countBasketView.setVisibility(View.GONE);
+        }else {
+            countBasketView.setVisibility(View.VISIBLE);
+            countBasketView.setText(String.valueOf(mRootModel
+            .getBasketCounter()));
+        }
+    }*/
 
     //region ==================== IRootView ===================
 
@@ -298,6 +359,12 @@ public class RootActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void updateCartCounter(int count) {
+        System.out.print(count);
+        // TODO: 22.03.2017 implement this
+    }
+
     //endregion
 
     //region ==================== ActionBar ===================
@@ -339,27 +406,45 @@ public class RootActivity extends AppCompatActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mActionBarMenuItems != null && !mActionBarMenuItems.isEmpty()) {
-            for (MenuItemHolder menuItem : mActionBarMenuItems) {
-                MenuItem item = menu.add(menuItem.getIconResId());
+
+        if(mActionBarMenuItems != null && !mActionBarMenuItems.isEmpty()) {
+            for(MenuItemHolder menuItem: mActionBarMenuItems) {
+                MenuItem item = menu.add(menuItem.getTitle());
                 item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                        .setIcon(menuItem.getIconResId())
-                        .setOnMenuItemClickListener(menuItem.getListener());
+                        .setActionView(menuItem.getIconResId())
+                        .getActionView().setOnClickListener(menuItem.getViewListener());
             }
         } else {
             menu.clear();
         }
+
+        try {
+            MenuItem m = menu.getItem(0);
+            View v = m.getActionView();
+            mCountBasketView = (TextView) v.findViewById(R.id.basket_count);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public void setTabLayout(ViewPager pager) {
-        TabLayout tabView = new TabLayout(this); // создаем TabLayout
-        tabView.setupWithViewPager(pager); // связываем его с ViewPager
-        tabView.setTabGravity(TabLayout.GRAVITY_FILL);
-        mAppBar.addView(tabView); // добавляем табы в AppBar
-        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener
-                (tabView)); // регистрируем обработчик переключения по табам для ViewPager
+        View view = mAppBar.getChildAt(1);
+        TabLayout tabView;
+        if (view == null) {
+            tabView = new TabLayout(this); // создаем TabLayout
+            tabView.setupWithViewPager(pager); // связываем его с ViewPager
+            tabView.setTabGravity(TabLayout.GRAVITY_FILL);
+            mAppBar.addView(tabView); // добавляем табы в AppBar
+            pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener
+                    (tabView)); // регистрируем обработчик переключения по табам для ViewPager
+        } else {
+            tabView = (TabLayout) view;
+            tabView.setupWithViewPager(pager); //связываем его с ViewPager
+            pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabView));
+        }
     }
 
     @Override

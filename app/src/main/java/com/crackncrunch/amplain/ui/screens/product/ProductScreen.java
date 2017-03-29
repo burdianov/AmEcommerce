@@ -88,6 +88,10 @@ public class ProductScreen extends AbstractScreen<CatalogScreen.Component> {
             mProduct = productRealm;
         }
 
+        public ProductRealm getProduct() {
+            return mProduct;
+        }
+
         @Override
         protected void initActionBar() {
             // empty
@@ -158,7 +162,7 @@ public class ProductScreen extends AbstractScreen<CatalogScreen.Component> {
         }
 
         public void clickShowMore() {
-            Flow.get(getView()).set(new DetailScreen(mProduct));
+            Flow.get(getView()).set(new DetailScreen(mProduct, new CatalogScreen()));
         }
     }
 

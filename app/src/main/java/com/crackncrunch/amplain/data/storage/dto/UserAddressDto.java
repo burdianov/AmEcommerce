@@ -1,10 +1,9 @@
 package com.crackncrunch.amplain.data.storage.dto;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import com.crackncrunch.amplain.data.storage.realm.UserAddressRealm;
 
-public class UserAddressDto implements Parcelable {
-    private String id;
+public class UserAddressDto{
+    private int id;
     private String name;
     private String street;
     private String building;
@@ -17,9 +16,9 @@ public class UserAddressDto implements Parcelable {
 
     }
 
-    public UserAddressDto(String id, String name, String street, String building,
-                          String
-                                  apartment, int floor, String comment) {
+    public UserAddressDto(int id, String name, String street,
+                          String building, String apartment, int floor,
+                          String comment) {
         this.id = id;
         this.name = name;
         this.street = street;
@@ -29,34 +28,36 @@ public class UserAddressDto implements Parcelable {
         this.comment = comment;
     }
 
-    protected UserAddressDto(Parcel in) {
-        id = in.readString();
-        name = in.readString();
-        street = in.readString();
-        building = in.readString();
-        apartment = in.readString();
-        floor = in.readInt();
-        comment = in.readString();
-        favorite = in.readByte() != 0;
+    public UserAddressDto(UserAddressRealm addressRealm) {
+        this.id = addressRealm.getId();
+        this.name = addressRealm.getName();
+        this.street = addressRealm.getStreet();
+        this.building = addressRealm.getBuilding();
+        this.apartment = addressRealm.getApartment();
+        this.floor = addressRealm.getFloor();
+        this.comment = addressRealm.getComment();
+        this.favorite = addressRealm.getFavorite();
     }
 
-    public static final Creator<UserAddressDto> CREATOR = new Creator<UserAddressDto>() {
-        @Override
-        public UserAddressDto createFromParcel(Parcel in) {
-            return new UserAddressDto(in);
-        }
+    @Override
+    public boolean equals(Object obj) {
+        return this.hashCode() == obj.hashCode();
+    }
 
-        @Override
-        public UserAddressDto[] newArray(int size) {
-            return new UserAddressDto[size];
-        }
-    };
+    public void update(UserAddressDto address) {
+        this.name = address.getName();
+        this.street = address.getStreet();
+        this.building = address.getBuilding();
+        this.apartment = address.getApartment();
+        this.floor = address.getFloor();
+        this.comment = address.getComment();
+    }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -114,22 +115,5 @@ public class UserAddressDto implements Parcelable {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(name);
-        dest.writeString(street);
-        dest.writeString(building);
-        dest.writeString(apartment);
-        dest.writeInt(floor);
-        dest.writeString(comment);
-        dest.writeByte((byte) (favorite ? 1 : 0));
     }
 }

@@ -1,14 +1,14 @@
 package com.crackncrunch.amplain.data.managers;
 
 import android.content.Context;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.crackncrunch.amplain.App;
+import com.crackncrunch.amplain.AppConfig;
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.network.RestCallTransformer;
 import com.crackncrunch.amplain.data.network.RestService;
-import com.crackncrunch.amplain.data.network.error.AccessError;
-import com.crackncrunch.amplain.data.network.error.ApiError;
 import com.crackncrunch.amplain.data.network.req.UserLoginReq;
 import com.crackncrunch.amplain.data.network.res.AvatarUrlRes;
 import com.crackncrunch.amplain.data.network.res.CommentRes;
@@ -17,35 +17,33 @@ import com.crackncrunch.amplain.data.network.res.UserRes;
 import com.crackncrunch.amplain.data.storage.dto.CommentDto;
 import com.crackncrunch.amplain.data.storage.dto.ProductDto;
 import com.crackncrunch.amplain.data.storage.dto.UserAddressDto;
+import com.crackncrunch.amplain.data.storage.dto.UserInfoDto;
+import com.crackncrunch.amplain.data.storage.dto.UserSettingsDto;
+import com.crackncrunch.amplain.data.storage.realm.OrdersRealm;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
-import com.crackncrunch.amplain.data.storage.realm.UserAddressRealm;
 import com.crackncrunch.amplain.di.DaggerService;
 import com.crackncrunch.amplain.di.components.DaggerDataManagerComponent;
 import com.crackncrunch.amplain.di.components.DataManagerComponent;
 import com.crackncrunch.amplain.di.modules.LocalModule;
 import com.crackncrunch.amplain.di.modules.NetworkModule;
-import com.crackncrunch.amplain.utils.AppConfig;
 import com.crackncrunch.amplain.utils.NetworkStatusChecker;
 import com.fernandocejas.frodo.annotation.RxLogObservable;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.realm.RealmResults;
 import okhttp3.MultipartBody;
 import retrofit2.Retrofit;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.crackncrunch.amplain.data.managers.PreferencesManager.PROFILE_AVATAR_KEY;
-import static com.crackncrunch.amplain.data.managers.PreferencesManager.PROFILE_FULL_NAME_KEY;
-import static com.crackncrunch.amplain.data.managers.PreferencesManager.PROFILE_PHONE_KEY;
+import static android.support.annotation.VisibleForTesting.NONE;
 
 /**
  * Created by Lilian on 20-Feb-17.
@@ -53,8 +51,9 @@ import static com.crackncrunch.amplain.data.managers.PreferencesManager.PROFILE_
 
 public class DataManager {
 
-    private static DataManager sInstance;
     public static final String TAG = "DataManager";
+    private static DataManager sInstance = null;
+    private final RestCallTransformer mRestCallTransformer;
 
     @Inject
     PreferencesManager mPreferencesManager;
@@ -66,10 +65,6 @@ public class DataManager {
     Retrofit mRetrofit;
     @Inject
     RealmManager mRealmManager;
-
-    private Map<String, String> mUserProfileInfo;
-    private List<UserAddressDto> mUserAddresses;
-    private Map<String, Boolean> mUserSettings;
 
     private DataManager() {
         DataManagerComponent component = DaggerService.getComponent
@@ -85,15 +80,27 @@ public class DataManager {
         component.inject(this);
 
         generateProductsMockData();
-        initUserProfileData();
-        initUserSettingsData();
+
+        mRestCallTransformer = new RestCallTransformer<>();
 
         updateLocalDataWithTimer();
     }
 
-    // for Unit Test
-    public DataManager(RestService restService) {
+    @VisibleForTesting(otherwise = NONE)
+    DataManager(PreferencesManager preferencesManager) {
+        mPreferencesManager = preferencesManager;
+        mRestCallTransformer = new RestCallTransformer<>();
+        sInstance = this;
+    }
+
+    @VisibleForTesting(otherwise = NONE)
+    DataManager(RestService restService, PreferencesManager preferencesManager, RealmManager realmManager) {
         mRestService = restService;
+        mPreferencesManager = preferencesManager;
+        mRealmManager = realmManager;
+        mRestCallTransformer = new RestCallTransformer<>();
+        mRestCallTransformer.setTestMode();
+        sInstance = this;
     }
 
     public static DataManager getInstance() {
@@ -101,6 +108,10 @@ public class DataManager {
             sInstance = new DataManager();
         }
         return sInstance;
+    }
+
+    public RealmManager getRealmManager() {
+        return mRealmManager;
     }
 
     public PreferencesManager getPreferencesManager() {
@@ -113,18 +124,10 @@ public class DataManager {
 
     //region ==================== User Authentication ===================
 
-    public Observable<UserRes> loginUser(UserLoginReq userLoginReq) {
-        return mRestService.loginUser(userLoginReq)
-                .flatMap(userResResponse -> {
-                    switch (userResResponse.code()) {
-                        case 200:
-                            return Observable.just(userResResponse.body());
-                        case 403:
-                            return Observable.error(new AccessError());
-                        default:
-                            return Observable.error(new ApiError(userResResponse.code()));
-                    }
-                });
+    public Observable<UserRes> signInUser(final UserLoginReq loginReq) {
+        return mRestService.loginUser(loginReq)
+                .compose(((RestCallTransformer<UserRes>) mRestCallTransformer))
+                .doOnNext(userRes -> mPreferencesManager.saveProfileInfo(userRes));
     }
 
     public boolean isAuthUser() {
@@ -136,32 +139,12 @@ public class DataManager {
 
     //region ==================== User Profile ===================
 
-    private void initUserProfileData() {
-        mUserProfileInfo = new HashMap<>();
-
-        mUserProfileInfo = mPreferencesManager.getUserProfileInfo();
-        if (mUserProfileInfo.get(PROFILE_FULL_NAME_KEY).equals("")) {
-            mUserProfileInfo.put(PROFILE_FULL_NAME_KEY, "Hulk Hogan");
-        }
-        if (mUserProfileInfo.get(PROFILE_AVATAR_KEY).equals("")) {
-            mUserProfileInfo.put(PROFILE_AVATAR_KEY,
-                    "http://a1.files.biography.com/image/upload/c_fill,cs_srgb," +
-                            "dpr_1.0,g_face,h_300,q_80,w_300/MTIwNjA4NjM0MDQyNzQ2Mzgw.jpg");
-        }
-        if (mUserProfileInfo.get(PROFILE_PHONE_KEY).equals("")) {
-            mUserProfileInfo.put(PROFILE_PHONE_KEY, "+7(917)971-38-27");
-        }
+    public UserInfoDto getUserProfileInfo() {
+        return mPreferencesManager.getUserProfileInfo();
     }
 
-    public Map<String, String> getUserProfileInfo() {
-        return mUserProfileInfo;
-    }
-
-    public void saveUserProfileInfo(String name, String phone, String avatar) {
-        mUserProfileInfo.put(PROFILE_FULL_NAME_KEY, name);
-        mUserProfileInfo.put(PROFILE_PHONE_KEY, phone);
-        mUserProfileInfo.put(PROFILE_AVATAR_KEY, avatar);
-        mPreferencesManager.saveProfileInfo(mUserProfileInfo);
+    public void saveProfileInfo(UserInfoDto userInfoDto) {
+        mPreferencesManager.saveProfileInfo(userInfoDto);
     }
 
     public Observable<AvatarUrlRes> uploadUserPhoto(MultipartBody.Part body) {
@@ -172,77 +155,37 @@ public class DataManager {
 
     //region ==================== Addresses ===================
 
-    private void getUserAddressData() {
-        mUserAddresses = new ArrayList<>();
-
-        List<UserAddressRealm> userAddresses = mRealmManager
-                .getAllAddressesFromRealm();
-
-        if (userAddresses.size() == 0) {
-            UserAddressDto userAddress;
-            userAddress = new UserAddressDto(UUID.randomUUID().toString(),
-                    "Home", "Airport Road", "24", "56",
-                    9, "Beware of crazy dogs");
-            mRealmManager.saveNewAddressToRealm(userAddress);
-            mUserAddresses.add(userAddress);
-
-            userAddress = new UserAddressDto(UUID.randomUUID().toString(),
-                    "Work", "Central Park", "123", "67",
-                    2, "In the middle of nowhere");
-            mRealmManager.saveNewAddressToRealm(userAddress);
-            mUserAddresses.add(userAddress);
+    public void updateOrInsertAddress(UserAddressDto address) {
+        if (address.getId() == 0) {
+            mPreferencesManager.addUserAddress(address);
         } else {
-            for (UserAddressRealm address : userAddresses) {
-                UserAddressDto addressDto = new UserAddressDto();
-                addressDto.setId(address.getId());
-                addressDto.setName(address.getName());
-                addressDto.setStreet(address.getStreet());
-                addressDto.setBuilding(address.getBuilding());
-                addressDto.setApartment(address.getApartment());
-                addressDto.setFloor(address.getFloor());
-                addressDto.setComment(address.getComment());
-                addressDto.setFavorite(address.getFavorite());
-                mUserAddresses.add(addressDto);
+            for (UserAddressDto entry : mPreferencesManager.getUserAddresses()) {
+                if (entry.getId() == address.getId()) {
+                    mPreferencesManager.updateUserAddress(address);
+                    break;
+                }
             }
         }
     }
 
-    public void updateOrInsertAddress(UserAddressDto addressDto) {
-        if (mUserAddresses.contains(addressDto)) {
-            mUserAddresses.set(mUserAddresses.indexOf(addressDto), addressDto);
-        } else {
-            mUserAddresses.add(0, addressDto);
-        }
-        mRealmManager.saveNewAddressToRealm(addressDto);
-    }
-
-    public void removeAddress(UserAddressDto addressDto) {
-        if (mUserAddresses.contains(addressDto)) {
-            mUserAddresses.remove(mUserAddresses.indexOf(addressDto));
-            mRealmManager.deleteFromRealm(UserAddressRealm.class, addressDto.getId());
-        }
+    public void removeAddress(UserAddressDto userAddressDto) {
+        mPreferencesManager.removeAddress(userAddressDto);
     }
 
     public List<UserAddressDto> getUserAddresses() {
-        getUserAddressData();
-        return mUserAddresses;
+        return mPreferencesManager.getUserAddresses();
     }
 
     //endregion
 
     //region ==================== User Settings ===================
 
-    private void initUserSettingsData() {
-        mUserSettings = mPreferencesManager.getUserSettings();
+    public UserSettingsDto getUserSettings() {
+        return mPreferencesManager.getUserSettings();
     }
 
-    public Map<String, Boolean> getUserSettings() {
-        return mUserSettings;
-    }
-
-    public void saveSetting(String notificationKey, boolean isChecked) {
-        mPreferencesManager.saveSetting(notificationKey, isChecked);
-        mUserSettings.put(notificationKey, isChecked);
+    public void saveSettings(UserSettingsDto settings) {
+        mPreferencesManager.saveUserSettings(settings);
     }
 
     //endregion
@@ -301,39 +244,37 @@ public class DataManager {
     }
 
     private void updateLocalDataWithTimer() {
-        Log.e(TAG, "LOCAL UPDATE start : " + new Date());
-        Observable.interval(AppConfig.UPDATE_DATA_INTERVAL, TimeUnit.SECONDS) // генерируем последовательность испускающую элементы каждые 30 секунд
-                .flatMap(aLong -> NetworkStatusChecker.isInternetAvailable()) // проверяем состояние сети
-                .filter(aBoolean -> aBoolean) // только если сеть доступна запрашиваем данные из сети
-                .flatMap(aBoolean -> getProductsObsFromNetwork()) // запрашиваем данные из сети
+        Observable.interval(AppConfig.UPDATE_DATA_INTERVAL, TimeUnit.SECONDS) //генерируем послед каждые 30 сек
+                .flatMap(aLong -> NetworkStatusChecker.isInternetAvailable()) //проверяем состояние сети
+                .filter(aBoolean -> aBoolean) //только если есть сеть, то запрашиваем данные
+                .flatMap(aBoolean -> getProductsObsFromNetwork()) //запрашиваем данные из сети
                 .subscribe(productRealm -> {
-                    Log.e(TAG, "LOCAL UPDATE complete: ");
+                    Log.e(TAG, "updateLocalDataWithTimer: LOCAL UPDATE complete:");
                 }, throwable -> {
-                    throwable.printStackTrace();
-                    Log.e(TAG, "LOCAL UPDATE error: " + throwable.getMessage());
+                    Log.e(TAG, "updateLocalDataWithTimer: ERROR" + throwable.getMessage());
                 });
     }
 
     @RxLogObservable
     public Observable<ProductRealm> getProductsObsFromNetwork() {
         return mRestService.getProductResObs(mPreferencesManager.getLastProductUpdate())
-                .compose(new RestCallTransformer<List<ProductRes>>()) // трансформируем response, выбрасываем ApiError в случае ошибки
-                .flatMap(Observable::from) // преобразуем список товаров в последовательность товаров
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .compose(((RestCallTransformer<List<ProductRes>>) mRestCallTransformer))
+                .flatMap(Observable::from) // преобразуем список List в последовательность
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(productRes -> {
                     if (!productRes.isActive()) {
-                        mRealmManager.deleteFromRealm(ProductRealm.class,
-                                productRes.getId()); // удалить из базы данных если не активен
+                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId());
                     }
                 })
-                .distinct(ProductRes::getRemoteId)
-                .filter(ProductRes::isActive) // пропускаем дальше только активные товары
-                .doOnNext(productRes -> mRealmManager.saveProductResponseToRealm
-                        (productRes)) // сохраняем на диск только активные товары
+                .filter(ProductRes::isActive) //пропускаем дальше только активные(неактивные не нужно показывать, они же пустые)
+                .doOnNext(productRes -> {
+                    Log.e(TAG, "getProductsObsFromNetwork: " + productRes.getId());
+                    mRealmManager.saveProductResponseToRealm(productRes);//сохраняем на диск только активные
+                })
                 .retryWhen(errorObservable ->
                         errorObservable.zipWith(Observable.range(1,
-                                AppConfig.RETRY_REQUEST_COUNT),
+                                2/*AppConfig.RETRY_REQUEST_COUNT*/),
                                 (throwable, retryCount) -> retryCount) // генерируем последовательность чисел от 1 до 5 (число повторений запроса)
                                 .doOnNext(retryCount -> Log.e(TAG, "LOCAL UPDATE request retry " +
                                         "count: " + retryCount + " " + new Date()))
@@ -352,12 +293,24 @@ public class DataManager {
         return mRealmManager.getAllProductsFromRealm();
     }
 
+    public RealmResults<ProductRealm> getAllFavoriteProducts() {
+        return mRealmManager.getAllFavoriteProducts();
+    }
+
+    public RealmResults<OrdersRealm> getAllOrders() {
+        return mRealmManager.getAllOrders();
+    }
+
+    public void addOrderFromRealm(ProductRealm product) {
+        mRealmManager.addOrder(product);
+    }
+
     //endregion
 
     //region ==================== Comments ===================
 
     public Observable<CommentRes> sendComment(String productId, CommentRes comment) {
-        return mRestService.sendComment(productId, comment);
+        return mRestService.sendCommentToServer(productId, comment);
     }
 
     //endregion
@@ -365,4 +318,20 @@ public class DataManager {
     private String getResVal(int resourceId) {
         return mContext.getString(resourceId);
     }
+
+    //region ==================== Cart ===================
+
+    public RealmResults<ProductRealm> getProductInCart() {
+        return mRealmManager.getProductInCart();
+    }
+
+    public void saveCartProductCounter(int count) {
+        mPreferencesManager.saveBasketCounter(count);
+    }
+
+    public int loadCartProductCounter() {
+        return mPreferencesManager.getBasketCounter();
+    }
+
+    //endregion
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 
 public class ActivityResultDto {
+
     private int requestCode;
     private int resultCode;
     @Nullable
@@ -19,8 +20,16 @@ public class ActivityResultDto {
         return requestCode;
     }
 
+    public void setRequestCode(int requestCode) {
+        this.requestCode = requestCode;
+    }
+
     public int getResultCode() {
         return resultCode;
+    }
+
+    public void setResultCode(int resultCode) {
+        this.resultCode = resultCode;
     }
 
     @Nullable

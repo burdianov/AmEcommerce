@@ -1,4 +1,4 @@
-package com.crackncrunch.amplain.utils;
+package com.crackncrunch.amplain;
 
 /**
  * Created by Lilian on 21-Feb-17.

@@ -12,7 +12,6 @@ import com.crackncrunch.amplain.flow.Screen;
 import com.crackncrunch.amplain.mvp.models.AccountModel;
 import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.IAddressPresenter;
-import com.crackncrunch.amplain.mvp.presenters.MenuItemHolder;
 import com.crackncrunch.amplain.ui.screens.account.AccountScreen;
 
 import javax.inject.Inject;
@@ -104,13 +103,9 @@ public class AddressScreen extends AbstractScreen<AccountScreen.Component>
         @Override
         protected void initActionBar() {
             String title = mIsAdd ? "Add Address" : "Edit Address";
+
             mRootPresenter.newActionBarBuilder()
                     .setTitle(title)
-                    .addAction(new MenuItemHolder("Save", R.drawable
-                            .ic_done_black_24dp, item -> {
-                        clickOnAddAddress();
-                        return true;
-                    }))
                     .setBackArrow(true)
                     .build();
         }
