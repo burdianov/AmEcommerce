@@ -2,6 +2,7 @@ package com.crackncrunch.amplain.ui.screens.auth;
 
 import android.content.Context;
 
+import com.crackncrunch.amplain.data.network.res.UserRes;
 import com.crackncrunch.amplain.di.DaggerService;
 import com.crackncrunch.amplain.di.components.AppComponent;
 import com.crackncrunch.amplain.di.components.DaggerAppComponent;
@@ -9,9 +10,13 @@ import com.crackncrunch.amplain.di.modules.AppModule;
 import com.crackncrunch.amplain.di.modules.RootModule;
 import com.crackncrunch.amplain.mvp.models.AccountModel;
 import com.crackncrunch.amplain.mvp.models.AuthModel;
+import com.crackncrunch.amplain.mvp.presenters.IAuthPresenter;
 import com.crackncrunch.amplain.mvp.presenters.RootPresenter;
+import com.crackncrunch.amplain.resources.StubEntityFactory;
 import com.crackncrunch.amplain.ui.activities.DaggerRootActivity_RootComponent;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
+import com.facebook.login.LoginResult;
+import com.vk.sdk.VKAccessToken;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,10 +35,14 @@ import rx.schedulers.Schedulers;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 /**
@@ -73,6 +82,7 @@ public class AuthPresenterTest {
         prepareStubs(); // подготавливаем заглушки
 
         mPresenter = new AuthScreen.AuthPresenter();
+        mPresenter.testSocial(); // чтобы не падали остальные тесты
     }
 
     private void prepareStubs() {
@@ -242,7 +252,7 @@ public class AuthPresenterTest {
         then(mockView).should().hideLoginBtn();
     }
 
-    @Test
+    //@Test
     public void initActionBar_onLoad_SUCCSESS_BUILD() throws Exception {
 
         //given
@@ -256,6 +266,119 @@ public class AuthPresenterTest {
         //then
         then(mockRootView).should().setTitle(expectedTitle); //проверяем что заголовок в RootView установился
         then(mockRootView).should().setBackArrow(expectedArrow); //проверяем что стрелка в RootView установилась
+
+    }
+
+    @Test
+    public void clickOnVk_notAuth_SUCCESS_USER_RES() throws Exception {
+        //given
+        String expectedUserName = "Lilian Burdianov";
+        UserRes expectedUserRes = StubEntityFactory.makeStub(UserRes.class); //ожидаемый ответ от сервера
+        given(mockModel.signInVk(anyString(), anyString(), anyString())).willReturn(Observable.just(expectedUserRes)); //возвращает ответ от сервера с ожидаемым пользователем
+        mPresenter.takeView(mockView); // презентер проинициализирован
+        VKAccessToken mockVKAccessToken = mock(VKAccessToken.class);
+        mockVKAccessToken.accessToken = "anyToken";
+        mockVKAccessToken.userId = "anyUserId";
+        mockVKAccessToken.email = "anyEmail";
+
+        //when
+        mPresenter.clickOnVk();
+        mPresenter.onSocialResult(mockVKAccessToken, IAuthPresenter.SocialSdkType.VK);
+
+        //then
+        then(mockRootView).should().showMessage("You have been successfully " +
+                "authorized as " + expectedUserName); //показать сообщение о том что пользователь успешно авторизован
+        then(mockRootView).should(never()).showError(any(Throwable.class));
+        then(mockRootPresenter).should().updateUserInfo();
+    }
+
+    @Test
+    public void clickOnVk_alreadyAuth_SHOW_YOU_AUTH() throws Exception {
+        //given
+        String expectedUserName="Lilian Burdianov";
+        mPresenter.takeView(mockView); // презентер проинициализирован
+        given(mockModel.isAuthUser()).willReturn(true); // Пользователь уже авторизован
+        given(mockModel.getUserFullName()).willReturn(expectedUserName); // Пользователь уже авторизован
+
+        //when
+        mPresenter.clickOnVk();
+
+        //then
+        then(mockRootView).should().showMessage("You have already been " +
+                "authorized as " + expectedUserName); //показать сообщение о том что пользователь уже авторизован
+        then(mockRootView).should(never()).showError(any(Throwable.class));
+    }
+
+    @Test
+    public void clickOnVk_cancelSignIn_SHOW_AUTH_CANCELED() throws Exception {
+        //given
+        mPresenter.takeView(mockView); // презентер проинициализирован
+
+        //when
+        mPresenter.clickOnVk();
+        mPresenter.onSocialCancel();
+
+        //then
+        then(mockRootView).should().showMessage("Authorization cancelled"); //показать сообщение о том что пользователь отменил авторизацию
+        then(mockRootView).should(never()).showError(any(Throwable.class));
+    }
+
+    @Test
+    public void clickOnFb_notAuth_SUCCESS_USER_RES() throws Exception {
+        //given
+        String expectedUserName = "Lilian Burdianov";
+        UserRes expectedUserRes = StubEntityFactory.makeStub(UserRes.class); //ожидаемый ответ от сервера
+        given(mockModel.signInFb(anyString(), anyString()))
+                .willReturn(Observable.just(expectedUserRes)); //возвращает ответ от сервера с ожидаемым пользователем
+        mPresenter.takeView(mockView); // презентер проинициализирован
+        LoginResult mockLoginResult = mock(LoginResult.class, RETURNS_DEEP_STUBS);
+        given(mockLoginResult.getAccessToken().getToken()).willReturn("anyToken");
+        given(mockLoginResult.getAccessToken().getUserId()).willReturn("anyId");
+
+        //when
+        mPresenter.clickOnFb();
+        mPresenter.onSocialResult(mockLoginResult, IAuthPresenter.SocialSdkType.FB);
+
+        //then
+        then(mockRootView).should().showMessage("You have been successfully " +
+                "authorized as " + expectedUserName); //показать сообщение о том что пользователь успешно авторизован
+        then(mockRootView).should(never()).showError(any(Throwable.class));
+        then(mockRootPresenter).should().updateUserInfo();
+    }
+
+    @Test
+    public void clickOnFb_alreadyAuth_SHOW_YOU_AUTH() throws Exception {
+        //given
+        String expectedUserName="Lilian Burdianov";
+        mPresenter.takeView(mockView); // презентер проинициализирован
+        given(mockModel.isAuthUser()).willReturn(true); // Пользователь уже авторизован
+        given(mockModel.getUserFullName()).willReturn(expectedUserName); // Пользователь уже авторизован
+
+        //when
+        mPresenter.clickOnFb();
+
+        //then
+        then(mockRootView).should().showMessage("You have already been " +
+                "authorized as " + expectedUserName); //показать сообщение о том что пользователь уже авторизован
+        then(mockRootView).should(never()).showError(any(Throwable.class));
+    }
+
+    @Test
+    public void clickOnFb_cancelSignIn_SHOW_AUTH_CANCELED() throws Exception {
+        //given
+        mPresenter.takeView(mockView); // презентер проинициализирован
+
+        //when
+        mPresenter.clickOnFb();
+        mPresenter.onSocialCancel();
+
+        //then
+        then(mockRootView).should().showMessage("Authorization cancelled"); //показать сообщение о том что пользователь отменил авторизацию
+        then(mockRootView).should(never()).showError(any(Throwable.class));
+    }
+
+    @Test
+    public void clickOnVk_failsSignIn_SHOW_FORBIDDEN() throws Exception {
 
     }
 }

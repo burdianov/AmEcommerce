@@ -375,6 +375,11 @@ public class RootActivity extends AppCompatActivity
     }
 
     @Override
+    public void setTitle(CharSequence title) {
+        mActionBar.setTitle(title);
+    }
+
+    @Override
     public void setBackArrow(boolean enabled) {
         if (mToggle != null && mActionBar != null) {
             if (enabled) {

@@ -142,7 +142,7 @@
                 android:layout_height="@dimen/size_medium_56"
                 android:layout_marginLeft="@dimen/spacing_normal_16"
                 android:layout_marginRight="@dimen/spacing_normal_16"
-                android:background="@drawable/vk_selector_btn"
+                android:background="@drawable/fb_selector_btn"
                 android:contentDescription="@string/facebook_button"/>
 
             <ImageButton
@@ -160,7 +160,7 @@
                 android:layout_height="@dimen/size_medium_56"
                 android:layout_marginLeft="@dimen/spacing_normal_16"
                 android:layout_marginRight="@dimen/spacing_normal_16"
-                android:background="@drawable/fb_selector_btn"
+                android:background="@drawable/vk_selector_btn"
                 android:contentDescription="@string/vk_button"/>
 
         </LinearLayout>

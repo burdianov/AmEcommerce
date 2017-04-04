@@ -240,7 +240,8 @@ public class PreferencesManagerTest {
     public void saveProfileInfo_expectedUserDto_EXPECTED_USER_VALUES_EQ_PREFERENCES_VALUES() throws Exception {
         //given
         preparePutStringStub();
-        UserInfoDto expectedUser = new UserInfoDto("Михаил Макеев", "89179716463", "https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg");
+        UserInfoDto expectedUser = new UserInfoDto("Lilian Burdianov",
+                "89179716463", "https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg");
 
         //when
         mPreferencesManager.saveProfileInfo(expectedUser);
@@ -256,7 +257,9 @@ public class PreferencesManagerTest {
     public void saveProfileInfo_expectedUserRes_EXPECTED_USER_VALUES_EQ_PREFERENCES_VALUES() throws Exception {
         //given
         preparePutStringStub();
-        UserRes expectedUser = new UserRes("58711631a242690011b1b26d", "Михаил Макеев", "https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg", "token", "89179716463", null);
+        UserRes expectedUser = new UserRes("58711631a242690011b1b26d",
+                "Lilian Burdianov", "https://pp.userapi" +
+                ".com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg", "token", "89179716463", null);
 
         //when
         mPreferencesManager.saveProfileInfo(expectedUser);
@@ -274,7 +277,8 @@ public class PreferencesManagerTest {
     public void getUserProfileInfo_userExist_EXPECTED_USER_VALUES_EQ_PREFERENCES_VALUES() throws Exception {
         //given
         preparePutStringStub();
-        UserInfoDto user = new UserInfoDto("Михаил Макеев", "89179716463", "https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg");
+        UserInfoDto user = new UserInfoDto("Lilian Burdianov", "89179716463",
+                "https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg");
 
         //when
         mPreferencesManager.saveProfileInfo(user);
@@ -374,7 +378,7 @@ public class PreferencesManagerTest {
     public void getUserName_expectedName_EXPECTED_NAME_EQ_PREFERENCES_VALUES() throws Exception {
         //given
         preparePutStringStub();
-        String expectedName = "Макеев Михаил";
+        String expectedName = "Lilian Burdianov";
         mockEditor.putString(PROFILE_FULL_NAME_KEY, expectedName);
 
         //when

@@ -10,15 +10,20 @@ import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.data.network.RestCallTransformer;
 import com.crackncrunch.amplain.data.network.RestService;
 import com.crackncrunch.amplain.data.network.req.UserLoginReq;
+import com.crackncrunch.amplain.data.network.req.UserSignInReq;
 import com.crackncrunch.amplain.data.network.res.AvatarUrlRes;
 import com.crackncrunch.amplain.data.network.res.CommentRes;
+import com.crackncrunch.amplain.data.network.res.FbProfileRes;
 import com.crackncrunch.amplain.data.network.res.ProductRes;
 import com.crackncrunch.amplain.data.network.res.UserRes;
+import com.crackncrunch.amplain.data.network.res.VkProfileRes;
 import com.crackncrunch.amplain.data.storage.dto.CommentDto;
+import com.crackncrunch.amplain.data.storage.dto.FbDataDto;
 import com.crackncrunch.amplain.data.storage.dto.ProductDto;
 import com.crackncrunch.amplain.data.storage.dto.UserAddressDto;
 import com.crackncrunch.amplain.data.storage.dto.UserInfoDto;
 import com.crackncrunch.amplain.data.storage.dto.UserSettingsDto;
+import com.crackncrunch.amplain.data.storage.dto.VkDataDto;
 import com.crackncrunch.amplain.data.storage.realm.OrdersRealm;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
 import com.crackncrunch.amplain.di.DaggerService;
@@ -186,6 +191,61 @@ public class DataManager {
 
     public void saveSettings(UserSettingsDto settings) {
         mPreferencesManager.saveUserSettings(settings);
+    }
+
+    public String getUserFullName() {
+        return mPreferencesManager.getUserName();
+    }
+
+    public Observable<UserRes> socialSignIn(UserSignInReq signInReq) {
+        return mRestService.socialSignIn(signInReq)
+                .compose(((RestCallTransformer<UserRes>) mRestCallTransformer))
+                .retryWhen(errorObservable ->
+                        errorObservable.zipWith(Observable.range(1, AppConfig.RETRY_REQUEST_COUNT),
+                                (throwable, retryCount) -> retryCount) // генерируем последовательность чисел от 1 до 5 (число повторений запроса)
+                                .doOnNext(retryCount -> Log.e(TAG, "LOCAL UPDATE request retry " +
+                                        "count: " + retryCount + " " + new Date()))
+                                .map(retryCount ->
+                                        ((long) (AppConfig.RETRY_REQUEST_BASE_DELAY * Math
+                                                .pow(Math.E, retryCount)))) // расчитываем экспоненциальную задержку
+                                .doOnNext(delay -> Log.e(TAG, "LOCAL UPDATE delay: " +
+                                        delay))
+                                .flatMap(delay -> Observable.timer(delay,
+                                        TimeUnit.MILLISECONDS)) // создаем и возвращаем задержку в миллисекундах
+                );
+    }
+
+    public Observable<VkProfileRes> getVkProfile(String baseUrl, VkDataDto vkDataDto) {
+        return mRestService.signInVk(baseUrl, vkDataDto.getAccessToken());
+    }
+
+    public Observable<FbProfileRes> getFbProfile(String baseUrl, FbDataDto fbDataDto) {
+        return mRestService.getFbProfile(baseUrl, fbDataDto.getAccessToken());
+    }
+
+    // TODO: 02-Apr-17 Test me
+    public Observable<UserRes> signInVk(VkDataDto vkDataDto) {
+        return getVkProfile(AppConfig.VK_BASE_URL +
+                "users.get?fields=photo_200,contacts", vkDataDto)
+                .map(vkProfileRes -> new UserSignInReq(vkProfileRes
+                        .getFirstName(), vkProfileRes.getLastName(),
+                        vkProfileRes.getAvatar(), vkDataDto.getEmail(),
+                        vkProfileRes.getPhone()))
+                .flatMap(this::socialSignIn)
+                .doOnNext(userRes -> mPreferencesManager.saveProfileInfo(userRes))
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Observable<UserRes> signInFb(FbDataDto fbDataDto) {
+        return getFbProfile(AppConfig.FB_BASE_URL +
+                "me?fields=email,picture.width(200).height(200),first_name,last_name", fbDataDto)
+                .map(fbProfileRes -> new UserSignInReq(fbProfileRes
+                        .getFirstName(), fbProfileRes.getLastName(),
+                        fbProfileRes.getAvatar(), fbProfileRes.getEmail(),
+                        "not provided"))
+                .flatMap(this::socialSignIn)
+                .doOnNext(userRes -> mPreferencesManager.saveProfileInfo(userRes))
+                .subscribeOn(Schedulers.io());
     }
 
     //endregion

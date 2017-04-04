@@ -1,6 +1,9 @@
 package com.crackncrunch.amplain.ui.screens.auth;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 
 import com.crackncrunch.amplain.R;
 import com.crackncrunch.amplain.di.DaggerService;
@@ -12,13 +15,28 @@ import com.crackncrunch.amplain.mvp.presenters.AbstractPresenter;
 import com.crackncrunch.amplain.mvp.presenters.IAuthPresenter;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
 import com.crackncrunch.amplain.ui.activities.SplashActivity;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.internal.CallbackManagerImpl;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.VKServiceActivity;
+import com.vk.sdk.api.VKError;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dagger.Provides;
 import flow.Flow;
 import mortar.MortarScope;
+import rx.Subscription;
+
+import static android.support.annotation.VisibleForTesting.NONE;
 
 @Screen(R.layout.screen_auth)
 public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
@@ -39,9 +57,9 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
     }
 
     @Override
-    public Object createScreenComponent(RootActivity.RootComponent parentRootComponent) {
+    public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
         return DaggerAuthScreen_Component.builder()
-                .rootComponent(parentRootComponent)
+                .rootComponent(parentComponent)
                 .module(new Module())
                 .build();
     }
@@ -79,6 +97,10 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
             extends AbstractPresenter<AuthView, AuthModel>
             implements IAuthPresenter {
 
+        private boolean mTestMode;
+        private LoginManager mLoginManager;
+        private CallbackManager mCallbackManager;
+
         public AuthPresenter() {
         }
 
@@ -101,13 +123,6 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
         }
 
-        /*@Override
-        protected void onEnterScope(MortarScope scope) {
-            super.onEnterScope(scope);
-            ((Component) scope.getService(DaggerService.SERVICE_NAME))
-                    .inject(this);
-        }*/
-
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
@@ -119,6 +134,9 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                 } else {
                     view.showLoginBtn();
                 }
+            }
+            if (!mTestMode) {
+                initSocialSdk();
             }
         }
 
@@ -151,15 +169,29 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         public void clickOnFb() {
-            if (getRootView() != null) {
-                getRootView().showMessage("clickOnFb");
+            if (!mModel.isAuthUser()) {
+                if (mLoginManager != null) {
+                    mLoginManager.logInWithReadPermissions(((Activity)
+                            getRootView()), Arrays.asList("email"));
+                }
+            } else {
+                if (getRootView() != null) {
+                    getRootView().showMessage("You have already been " +
+                            "authorized as " + mModel.getUserFullName());
+                }
             }
         }
 
         @Override
         public void clickOnVk() {
-            if (getRootView() != null) {
-                getRootView().showMessage("clickOnVk");
+            if (!mModel.isAuthUser()) {
+                Activity runningActivity = (Activity) getRootView();
+                VKSdk.login(runningActivity, "email");
+            } else {
+                if (getRootView() != null) {
+                    getRootView().showMessage("You have already been " +
+                            "authorized as " + mModel.getUserFullName());
+                }
             }
         }
 
@@ -187,6 +219,138 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         @Override
         public boolean checkUserAuth() {
             return mModel.isAuthUser();
+        }
+
+        @Override
+        public void initSocialSdk() {
+            if (mLoginManager == null) {
+                mLoginManager = LoginManager.getInstance();
+            }
+            if (mCallbackManager == null) {
+                mCallbackManager = CallbackManager.Factory.create();
+                mLoginManager.registerCallback(mCallbackManager, facebookCallback);
+            }
+            mCompSubs.add(subscribeOnActivityResult());
+        }
+
+        final FacebookCallback<LoginResult> facebookCallback = new
+                FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        onSocialResult(loginResult, SocialSdkType.FB);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        onSocialCancel();
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        onSocialError(error, SocialSdkType.FB);
+                    }
+                };
+
+        @VisibleForTesting(otherwise = NONE)
+        public void testSocial() {
+            mTestMode = true;
+        }
+
+        private Subscription subscribeOnActivityResult() {
+            return mRootPresenter.getActivityResultSubject()
+                    .subscribe(activityResultDto -> {
+                                final int requestCode = activityResultDto.getRequestCode();
+                                final int resultCode = activityResultDto.getResultCode();
+                                final Intent intent = activityResultDto.getIntent();
+
+                                if (requestCode == VKServiceActivity.VKServiceType.Authorization.getOuterCode()) {
+                                    VKSdk.onActivityResult(requestCode, resultCode, intent, vkCallback); // передаем результат авторизации в VK SDK
+                                }
+
+                                if (requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()) {
+                                    mCallbackManager.onActivityResult(requestCode, resultCode, intent);
+                                }
+
+                                if (resultCode == Activity.RESULT_CANCELED &&
+                                        (requestCode == VKServiceActivity.VKServiceType.Authorization.getOuterCode()
+                                                || requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode())) {
+                                    onSocialCancel();
+                                }
+                            },
+                            throwable -> {
+                                getRootView().showError(throwable);
+                            });
+        }
+
+        final VKCallback<VKAccessToken> vkCallback = new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                onSocialResult(res, SocialSdkType.VK);
+            }
+
+            @Override
+            public void onError(VKError error) {
+                onSocialError(error, SocialSdkType.VK);
+            }
+        };
+
+        @Override
+        public void onSocialResult(Object res, SocialSdkType type) {
+            switch (type) {
+                case VK:
+                    VKAccessToken vkRes = ((VKAccessToken) res);
+                    final String accessToken = vkRes.accessToken;
+                    final String userId = vkRes.userId;
+                    final String email = vkRes.email;
+                    mModel.signInVk(accessToken, userId, email)
+                            .subscribe(userRes -> {
+                                        if (getRootView() != null) {
+                                            getRootView().showMessage("You have been successfully " +
+                                                    "authorized as " + userRes.getFullName());
+                                        }
+                                    },
+                                    throwable -> {
+                                        if (getRootView() != null) {
+                                            getRootView().showError(throwable);
+                                        }
+                                    },
+                                    () -> {
+                                        mRootPresenter.updateUserInfo();
+                                    });
+                    break;
+                case FB:
+                    LoginResult fbRes = ((LoginResult) res);
+                    mModel.signInFb(fbRes.getAccessToken().getToken(), fbRes.getAccessToken().getUserId())
+                            .subscribe(userRes -> {
+                                        if (getRootView() != null) {
+                                            getRootView().showMessage("You have been successfully " +
+                                                    "authorized as " + userRes.getFullName());
+                                        }
+                                    },
+                                    throwable -> {
+                                        if (getRootView() != null) {
+                                            getRootView().showError(throwable);
+                                        }
+                                    },
+                                    () -> {
+                                        mRootPresenter.updateUserInfo();
+                                    });
+                    break;
+                case TWITTER:
+                    break;
+            }
+        }
+
+        @Override
+        public void onSocialError(Object res, SocialSdkType type) {
+            // TODO: 31-Mar-17 handle error
+        }
+
+        @Override
+        public void onSocialCancel() {
+            if (getRootView() != null) {
+                getRootView().showMessage("Authorization cancelled");
+            }
         }
 
         public void onLoginSuccess() {

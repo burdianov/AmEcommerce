@@ -123,4 +123,10 @@ dependencies {
 
     // RealmRecyclerViewAdapter
     compile 'io.realm:android-adapters:1.4.0'
+
+    // VK
+    compile 'com.vk:androidsdk:1.6.5'
+
+    // Facebook
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
 }

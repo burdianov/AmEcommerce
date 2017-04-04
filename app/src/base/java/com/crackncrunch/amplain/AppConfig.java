@@ -5,7 +5,11 @@ package com.crackncrunch.amplain;
  */
 
 public class AppConfig {
-    public static final String BASE_URL = "https://skba1.mgbeta.ru/api/v1/";
+    // public static final String BASE_URL = "https://skba1.mgbeta.ru/api/v1/";
+    public static final String BASE_URL = "https://private-8967d4-middleappskillbranch.apiary-mock.com";
+    public static final String VK_BASE_URL = "https://api.vk.com/method/";
+    public static final String FB_BASE_URL = "https://graph.facebook.com/v2.8/";
+
     public static final int MAX_CONNECTION_TIMEOUT = 5000;
     public static final int MAX_READ_TIMEOUT = 5000;
     public static final int MAX_WRITE_TIMEOUT = 5000;

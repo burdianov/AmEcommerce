@@ -132,4 +132,7 @@
     <string name="email_or_password_wrong_format">Incorrect format of
         Email or Password</string>
     <string name="authentication_successful">Authentication Successful</string>
+
+    <integer name="com_vk_sdk_AppId">5958461</integer>
+    <string name="facebook_app_id">280754145709497</string>
 </resources>

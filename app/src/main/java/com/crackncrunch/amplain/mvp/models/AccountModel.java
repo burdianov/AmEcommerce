@@ -12,10 +12,10 @@ import rx.subjects.BehaviorSubject;
 
 public class AccountModel extends AbstractModel {
 
-    private BehaviorSubject<UserInfoDto> mUserInfoObs = BehaviorSubject.create();
+    private BehaviorSubject<UserInfoDto> mUserInfoSbj = BehaviorSubject.create();
 
     public AccountModel() {
-        mUserInfoObs.onNext(getUserProfileInfo());
+        mUserInfoSbj.onNext(getUserProfileInfo());
     }
 
     //region ==================== Addresses ===================
@@ -58,7 +58,7 @@ public class AccountModel extends AbstractModel {
 
     public void saveUserProfileInfo(UserInfoDto userInfo) {
         mDataManager.saveProfileInfo(userInfo);
-        mUserInfoObs.onNext(userInfo);
+        mUserInfoSbj.onNext(userInfo);
 
         String uriAvatar = userInfo.getAvatar();
         if (!uriAvatar.contains("http")) {
@@ -71,7 +71,7 @@ public class AccountModel extends AbstractModel {
     }
 
     public Observable<UserInfoDto> getUserInfoSbj() {
-        return mUserInfoObs;
+        return mUserInfoSbj;
     }
 
     private void uploadAvatarToServer(String imageUri) {
@@ -86,5 +86,9 @@ public class AccountModel extends AbstractModel {
         final BehaviorSubject<Integer> sbj = BehaviorSubject.create(count);
         graterThanZeroProductCount.addChangeListener(element -> sbj.onNext(element.size()));
         return sbj;
+    }
+
+    public void updateUserInfo() {
+        mUserInfoSbj.onNext(getUserProfileInfo());
     }
 }

@@ -3,10 +3,10 @@ package com.crackncrunch.amplain.resources;
 public class TestResponses {
     public static final String SUCSESS_USER_RES_WITH_ADDRESS = "{\n" +
             "  \"_id\": \"58711631a242690011b1b26d\",\n" +
-            "  \"fullName\": \"Макеев Михаил\",\n" +
+            "  \"fullName\": \"Lilian Burdianov\",\n" +
             "  \"avatarUrl\": \"https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg\",\n" +
             "  \"token\": \"wegfvw;edcnw'lkedm93847983yuhefoij32lkml'kjvj30fewoidvn\",\n" +
-            "  \"phone\": \"89179711111\",\n" +
+            "  \"phone\": \"891797111113\",\n" +
             "  \"addresses\": [\n" +
             "    {\n" +
             "      \"_id\": \"58711631a242690011b1b26d\",\n" +
@@ -22,10 +22,10 @@ public class TestResponses {
 
     public static final String SUCSESS_USER_RES_WITHOUT_ADDRESS = "{\n" +
             "  \"_id\": \"58711631a242690011b1b26d\",\n" +
-            "  \"fullName\": \"Макеев Михаил\",\n" +
+            "  \"fullName\": \"Lilian Burdianov\",\n" +
             "  \"avatarUrl\": \"https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg\",\n" +
             "  \"token\": \"wegfvw;edcnw'lkedm93847983yuhefoij32lkml'kjvj30fewoidvn\",\n" +
-            "  \"phone\": \"89179711111\",\n" +
+            "  \"phone\": \"891797111113\",\n" +
             "  \"addresses\": []\n" +
             "}";
 
@@ -274,4 +274,33 @@ public class TestResponses {
             "                ]\n" +
             "              }\n" +
             "            ]";
+
+    public static final String VK_PROFILE_RES_SUCCESS = "{\n" +
+            "  \"response\": [\n" +
+            "    {\n" +
+            "      \"uid\": 30405097,\n" +
+            "      \"first_name\": \"Lilian\",\n" +
+            "      \"last_name\": \"Burdianov\",\n" +
+            "      \"photo_200\": \"https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg\",\n" +
+            "      \"mobile_phone\": \"89179711113\",\n" +
+            "      \"home_phone\": \"89179716463\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+
+    public static final String FB_PROFILE_RES_SUCCESS = "{\n" +
+            "  \"email\": \"lilian.burdianov@gmail.com\",\n" +
+            "  \"picture\": {\n" +
+            "    \"data\": {\n" +
+            "      \"height\": 200,\n" +
+            "      \"is_silhouette\": false,\n" +
+            "      \"url\": \"https://scontent.xx.fbcdn.net/v/t1.0-1/p200x200/12342782_1515567822069044_6374123212258412889_n.jpg?oh=2548c1824eaa4cccd071aa920b96d7af&oe=59627FC4\",\n" +
+            "      \"width\": 200\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"first_name\": \"Lilian\",\n" +
+            "  \"last_name\": \"Burdianov\",\n" +
+            "  \"id\": \"1682199162072575\"\n" +
+            "}" ;
+
 }

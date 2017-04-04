@@ -56,7 +56,6 @@ public class RootPresenter extends Presenter<IRootView> {
     AccountModel mAccountModel;
 
     CompositeSubscription mCompositeSubscription;
-    private Subscription mUserInfoSub;
     private String mPhotoFileUrl;
     private PublishSubject<ActivityResultDto> mActivityResultSubject = PublishSubject.create();
     private BehaviorSubject<ActivityPermissionsResultDto> mActivityPermissionsResultSubject = BehaviorSubject.create();
@@ -123,7 +122,6 @@ public class RootPresenter extends Presenter<IRootView> {
     }
 
     private Subscription subscribeOnProductCountSbj() {
-        Observable<Integer> test = mAccountModel.getProductCountSbj();
         return mAccountModel.getProductCountSbj()
                 .subscribe(cartCount -> getView().updateCartCounter(cartCount),
                         throwable -> getView().showError(throwable));
@@ -212,6 +210,10 @@ public class RootPresenter extends Presenter<IRootView> {
 
         return FileProvider.getUriForFile((Activity) getView(),
                 FILE_PROVIDER_AUTHORITY, file);
+    }
+
+    public void updateUserInfo() {
+        mAccountModel.updateUserInfo();
     }
 
     public class ActionBarBuilder {

@@ -4,9 +4,14 @@ import com.crackncrunch.amplain.data.network.RestService;
 import com.crackncrunch.amplain.data.network.error.ApiError;
 import com.crackncrunch.amplain.data.network.error.ForbiddenApiError;
 import com.crackncrunch.amplain.data.network.req.UserLoginReq;
+import com.crackncrunch.amplain.data.network.req.UserSignInReq;
 import com.crackncrunch.amplain.data.network.res.CommentJsonAdapter;
+import com.crackncrunch.amplain.data.network.res.FbProfileRes;
 import com.crackncrunch.amplain.data.network.res.ProductRes;
 import com.crackncrunch.amplain.data.network.res.UserRes;
+import com.crackncrunch.amplain.data.network.res.VkProfileRes;
+import com.crackncrunch.amplain.data.storage.dto.FbDataDto;
+import com.crackncrunch.amplain.data.storage.dto.VkDataDto;
 import com.crackncrunch.amplain.data.storage.realm.ProductRealm;
 import com.crackncrunch.amplain.resources.StubEntityFactory;
 import com.crackncrunch.amplain.resources.TestResponses;
@@ -87,6 +92,9 @@ public class DataManagerTest {
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
                 String path = request.getPath(); // получаем path запрса
+                if (path.contains("?")) {
+                    path = path.substring(0, path.indexOf("?"));
+                }
                 switch (path) {
                     case "/login":   //RestService "/" + path  !!!!
                         return new MockResponse()
@@ -99,6 +107,18 @@ public class DataManagerTest {
                                 .setHeader(ConstantsManager
                                         .LAST_MODIFIED_HEADER, UNIX_EPOCH_TIME)
                                 .setBody(TestResponses.SUCCSESS_GET_PRODUCTS);
+                    case "/users.get":
+                        return new MockResponse()
+                                .setResponseCode(200)
+                                .setBody(TestResponses.VK_PROFILE_RES_SUCCESS);
+                    case "/me":
+                        return new MockResponse()
+                                .setResponseCode(200)
+                                .setBody(TestResponses.FB_PROFILE_RES_SUCCESS);
+                    case "/socialLogin":
+                        return new MockResponse()
+                                .setResponseCode(200)
+                                .setBody(TestResponses.SUCSESS_USER_RES_WITHOUT_ADDRESS);
                     default:
                         return new MockResponse().setResponseCode(404);
                 }
@@ -107,7 +127,6 @@ public class DataManagerTest {
 
         mMockWebServer.setDispatcher(dispatcher);
     }
-
     //endregion
 
     @After
@@ -227,5 +246,86 @@ public class DataManagerTest {
 
         then(mockRealmManager).should(never()).deleteFromRealm(any(), anyString()); // никогда не вызывается
         then(mockRealmManager).should(never()).saveProductResponseToRealm(any(ProductRes.class)); // никогда не вызывается
+    }
+
+    @Test
+    public void signInVk_200_SUCCESS_RESPONSE() throws Exception {
+        //given
+        VkDataDto expectedVkData = new VkDataDto("anyToken", "anyUser", "anyEmail");
+        String expectedUserName = "Lilian Burdianov";
+        String expectedUserAvatar = "https://pp.userapi.com/c313129/v313129097/80ff/5U-iWkuFxEM.jpg";
+        String expectedUserPhone = "89179711113";
+        prepareDispatcher_200();
+        mDataManager = new DataManager(mRestService, null, null); // создаем DataManager
+        TestSubscriber<VkProfileRes> subscriber = new TestSubscriber<>();
+
+        //when
+        mDataManager.getVkProfile(mMockWebServer.url("") + "users.get?fields=photo_200,contacts", expectedVkData)
+                .subscribe(subscriber);
+        subscriber.awaitTerminalEvent(); // ждем окончания последовательности
+        VkProfileRes actualRes = subscriber.getOnNextEvents().get(0); // получаем
+        // первый и единственный элемент последовательности
+
+        //then
+        subscriber.assertNoErrors(); //без ошибок
+        subscriber.assertCompleted(); //последовательность холодная - должна завершиться
+
+        assertEquals(expectedUserName, actualRes.getFullName()); // проверяем что в
+        // ответе пользователь с ожидаемым именем
+        assertEquals(expectedUserAvatar, actualRes.getAvatar()); // проверяем  что в ответе пользователь с ожидаемым аватаром
+        assertEquals(expectedUserPhone, actualRes.getPhone()); // проверяем что в ответе пользователь с ожидаемым телефоном
+    }
+
+    @Test
+    public void socialLogin_socialSignInReq_SUCESS_USER_RES() throws Exception {
+        //given
+        UserSignInReq expectedReq = StubEntityFactory.makeStub(UserSignInReq.class);
+        String expectedToken = "wegfvw;edcnw'lkedm93847983yuhefoij32lkml'kjvj30fewoidvn";
+        prepareDispatcher_200();
+        mDataManager = new DataManager(mRestService, null, null); // создаем DataManager
+        TestSubscriber<UserRes> subscriber = new TestSubscriber<>();
+
+        //when
+        mDataManager.socialSignIn(expectedReq)
+                .subscribe(subscriber);
+        subscriber.awaitTerminalEvent(); // ждем окончания последовательности
+        UserRes actualRes = subscriber.getOnNextEvents().get(0); // получаем первый и единственный элемент последовательности
+
+        //then
+        subscriber.assertNoErrors(); //без ошибок
+        subscriber.assertCompleted(); //последовательность холодная - должна завершиться
+
+        assertEquals(expectedReq.getFirstName() + " " + expectedReq.getLastName(),
+                actualRes.getFullName()); // проверяем что в ответе пользователь с ожидаемым именем
+        assertEquals(expectedReq.getAvatarUrl(), actualRes.getAvatarUrl()); // проверяем что в ответе пользователь с ожидаемым аватаром
+        assertEquals(expectedReq.getPhone(), actualRes.getPhone()); // проверяем что в ответе пользователь с ожидаемым телефоном
+        assertEquals(expectedToken, actualRes.getToken()); // проверяем что в ответе пользователь с ожидаемым токеном
+    }
+
+    @Test
+    public void signInFb_200_SUCCESS_RESPONSE() throws Exception {
+        //given
+        FbDataDto expectedFbData = new FbDataDto("anyToken", "anyUser");
+        String expectedEmail = "lilian.burdianov@gmail.com";
+        String expectedFirstName = "Lilian";
+        String expectedLastName = "Burdianov";
+
+        prepareDispatcher_200();
+        mDataManager = new DataManager(mRestService, null, null); // создаем DataManager
+        TestSubscriber<FbProfileRes> subscriber = new TestSubscriber<>();
+
+        //when
+        mDataManager.getFbProfile(mMockWebServer.url("") + "me?fields=email,picture.width(200).height(200),first_name,last_name",
+                expectedFbData).subscribe(subscriber);
+        subscriber.awaitTerminalEvent(); // ждем окончания последовательности
+        FbProfileRes actualRes = subscriber.getOnNextEvents().get(0); // получаем первый и единственный элемент последовательности
+
+        //then
+        subscriber.assertNoErrors(); //без ошибок
+        subscriber.assertCompleted(); //последовательность холодная - должна завершиться
+
+        assertEquals(expectedEmail, actualRes.getEmail()); // проверяем что в ответе пользователь с ожидаемым email
+        assertEquals(expectedFirstName, actualRes.getFirstName());
+        assertEquals(expectedLastName, actualRes.getLastName());
     }
 }

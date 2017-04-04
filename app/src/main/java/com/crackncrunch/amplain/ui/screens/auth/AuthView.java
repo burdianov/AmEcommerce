@@ -95,7 +95,7 @@ public class AuthView extends AbstractView<AuthScreen.AuthPresenter>
     ImageButton mTwBtn;
 
     @Inject
-    AuthScreen.AuthPresenter mPresenter;
+    AuthScreen.AuthPresenter mAuthPresenter;
 
     private Transition mBounds;
     private Transition mFade;
@@ -105,22 +105,6 @@ public class AuthView extends AbstractView<AuthScreen.AuthPresenter>
     private AuthScreen mScreen;
     private int mDen;
     private Subscription mAnimObs;
-
-    /*public AuthView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        if (!isInEditMode()) {
-            mScreen = Flow.getKey(this);
-            DaggerService.<AuthScreen.Component>getDaggerComponent(context)
-                    .inject(this);
-        }
-
-        mBounds = new ChangeBounds();
-        mFade = new Fade();
-        mDen = ViewHelper.getDensity(context);
-
-        mScaleAnimator = AnimatorInflater.loadAnimator(getContext(), R
-                .animator.logo_scale_animator);
-    }*/
 
     public AuthView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -167,9 +151,9 @@ public class AuthView extends AbstractView<AuthScreen.AuthPresenter>
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 if (!mPresenter.isValidEmail(s)) {
-                    mEmailWrap.setHint("Неверный формат Email");
+                    mEmailWrap.setHint("Incorrect email format");
                 } else {
-                    mEmailWrap.setHint("Введите email");
+                    mEmailWrap.setHint("Enter your email");
                 }
             }
 
@@ -187,9 +171,9 @@ public class AuthView extends AbstractView<AuthScreen.AuthPresenter>
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
                 if (!mPresenter.isValidEmail(s)) {
-                    mEmailWrap.setHint("Пароль должен содержать минимум 8 символов ");
+                    mEmailWrap.setHint("The password must contain at lease 8 characters");
                 } else {
-                    mEmailWrap.setHint("Введите email");
+                    mEmailWrap.setHint("Enter your email");
                 }
             }
 
@@ -223,7 +207,7 @@ public class AuthView extends AbstractView<AuthScreen.AuthPresenter>
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (!isInEditMode()) {
-            mPresenter.takeView(this);
+            mAuthPresenter.takeView(this);
         }
 
         //adding fonts
@@ -236,26 +220,6 @@ public class AuthView extends AbstractView<AuthScreen.AuthPresenter>
         mVkBtn.setAnimation(mAnimation);
         mFbBtn.setAnimation(mAnimation);
         mTwBtn.setAnimation(mAnimation);
-    }
-
-    /*@Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
-
-        if (!isInEditMode()) {
-            showViewFromState();
-            startLogoAnim();
-        }
-    }*/
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (!isInEditMode()) {
-            mPresenter.dropView(this);
-            mAnimObs.unsubscribe();
-        }
     }
 
     private void showViewFromState() {
@@ -294,27 +258,27 @@ public class AuthView extends AbstractView<AuthScreen.AuthPresenter>
 
     @OnClick(R.id.login_btn)
     void loginClick() {
-        mPresenter.clickOnLogin();
+        mAuthPresenter.clickOnLogin();
     }
 
     @OnClick(R.id.fb_btn)
     void fbClick() {
-        mPresenter.clickOnFb();
+        mAuthPresenter.clickOnFb();
     }
 
     @OnClick(R.id.tw_btn)
     void twitterClick() {
-        mPresenter.clickOnTwitter();
+        mAuthPresenter.clickOnTwitter();
     }
 
     @OnClick(R.id.vk_btn)
     void vkClick() {
-        mPresenter.clickOnVk();
+        mAuthPresenter.clickOnVk();
     }
 
     @OnClick(R.id.show_catalog_btn)
     void catalogClick() {
-        mPresenter.clickOnShowCatalog();
+        mAuthPresenter.clickOnShowCatalog();
     }
 
     //endregion

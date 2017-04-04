@@ -12,6 +12,7 @@ import com.crackncrunch.amplain.di.modules.RootModule;
 import com.crackncrunch.amplain.mortar.ScreenScoper;
 import com.crackncrunch.amplain.ui.activities.DaggerRootActivity_RootComponent;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
+import com.vk.sdk.VKSdk;
 
 import io.realm.Realm;
 import mortar.MortarScope;
@@ -46,6 +47,7 @@ public class App extends Application {
         super.onCreate();
 
         Realm.init(this);
+        VKSdk.initialize(this);
 
         createAppComponent();
         createRootActivityComponent();

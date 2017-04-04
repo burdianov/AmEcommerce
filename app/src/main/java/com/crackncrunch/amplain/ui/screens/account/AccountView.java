@@ -2,6 +2,7 @@ package com.crackncrunch.amplain.ui.screens.account;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -125,6 +126,9 @@ public class AccountView extends AbstractView<AccountScreen.AccountPresenter>
         mAdapter = new AddressesAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mAddressList.setLayoutManager(layoutManager);
+        mAddressList.addItemDecoration(
+                new DividerItemDecoration(ContextCompat.getDrawable(getContext(),
+                        R.drawable.item_decorator)));
         mAddressList.setAdapter(mAdapter);
         mAddressList.setVisibility(VISIBLE);
 
