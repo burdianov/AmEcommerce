@@ -150,7 +150,7 @@ public class AddressScreen extends AbstractScreen<AccountScreen.Component>
                 mAddressDto.setFavorite(userAddress.isFavorite());
 
                 mAccountModel.updateOrInsertAddress(mAddressDto);
-
+                //noinspection CheckResult
                 Flow.get(getView()).goBack();
             }
         }

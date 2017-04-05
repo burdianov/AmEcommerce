@@ -12,8 +12,11 @@ import com.crackncrunch.amplain.di.modules.RootModule;
 import com.crackncrunch.amplain.mortar.ScreenScoper;
 import com.crackncrunch.amplain.ui.activities.DaggerRootActivity_RootComponent;
 import com.crackncrunch.amplain.ui.activities.RootActivity;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.vk.sdk.VKSdk;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
@@ -23,6 +26,10 @@ import mortar.bundler.BundleServiceRunner;
  */
 
 public class App extends Application {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "Gouxybe5p4bWmAcExmHaLWRW6";
+    private static final String TWITTER_SECRET = "9up33Mc6OTYJhENR1W5u2YoxgxhFKeiVGpAFR6KeHvnyxIWQFY";
 
     private static AppComponent sAppComponent;
     private static Context sContext;
@@ -45,6 +52,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
 
         Realm.init(this);
         VKSdk.initialize(this);

@@ -169,13 +169,11 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         public void clickOnFb() {
-            if (!mModel.isAuthUser()) {
-                if (mLoginManager != null) {
+            if (getRootView() != null) {
+                if (!mModel.isAuthUser()) {
                     mLoginManager.logInWithReadPermissions(((Activity)
                             getRootView()), Arrays.asList("email"));
-                }
-            } else {
-                if (getRootView() != null) {
+                } else {
                     getRootView().showMessage("You have already been " +
                             "authorized as " + mModel.getUserFullName());
                 }
@@ -184,11 +182,11 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         public void clickOnVk() {
-            if (!mModel.isAuthUser()) {
-                Activity runningActivity = (Activity) getRootView();
-                VKSdk.login(runningActivity, "email");
-            } else {
-                if (getRootView() != null) {
+            if (getRootView() != null) {
+                if (!mModel.isAuthUser()) {
+                    Activity runningActivity = (Activity) getRootView();
+                    VKSdk.login(runningActivity, "email");
+                } else {
                     getRootView().showMessage("You have already been " +
                             "authorized as " + mModel.getUserFullName());
                 }
@@ -198,7 +196,12 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         @Override
         public void clickOnTwitter() {
             if (getRootView() != null) {
-                getRootView().showMessage("clickOnTwitter");
+                if (!mModel.isAuthUser()) {
+                    getRootView().showMessage("clickOnTwitter");
+                } else {
+                    getRootView().showMessage("You have already been " +
+                            "authorized as " + mModel.getUserFullName());
+                }
             }
         }
 
